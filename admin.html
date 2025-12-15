@@ -1,111 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Atelier da Ana</title>
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <title>Admin - Atelier da Ana</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
 <div class="app-container">
 
-    <!-- CABEÇALHO -->
-    <header class="header fade-in">
-        <div class="logo">Admin • Atelier da Ana</div>
-        <div class="subtitle">Painel administrativo</div>
-    </header>
+  <h2>Área da Administradora</h2>
 
-    <!-- MENU ADMIN -->
-    <nav class="navbar slide-down">
-        <button onclick="mostrarPagina('login-admin')">Login</button>
-        <button onclick="mostrarPagina('dashboard')" id="btn-dashboard" style="display:none;">Dashboard</button>
-        <button onclick="mostrarPagina('upload')" id="btn-upload" style="display:none;">Fotos</button>
-        <button onclick="mostrarPagina('clientes')" id="btn-clientes" style="display:none;">Clientes</button>
-        <button onclick="logout()" id="btn-logout" style="display:none;">Sair</button>
-    </nav>
+  <section id="login-admin" class="pagina">
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Email">
+      <input type="password" id="login-senha" placeholder="Senha">
+      <button class="btn-primary">Entrar</button>
+      <p id="login-erro" class="erro-text"></p>
+    </form>
+  </section>
 
-    <!-- LOGIN ADMIN -->
-    <section id="login-admin" class="pagina fade-in">
-        <h2>Login da Administradora</h2>
+  <section id="dashboard" class="pagina" style="display:none;">
+    <h3>Dashboard</h3>
 
-        <div class="card card-login">
-            <form id="login-form">
-                <label>E-mail</label>
-                <input type="email" id="login-email" required>
+    <p>Visitas: <span id="cont-visitas">0</span></p>
+    <p>Cliques imagens: <span id="cont-cliques-imagem">0</span></p>
+    <p>Orçamentos: <span id="cont-orcamento">0</span></p>
 
-                <label>Senha</label>
-                <input type="password" id="login-senha" required>
+    <input type="file" id="imagem">
+    <button onclick="adicionarFoto()">Enviar Foto</button>
 
-                <button class="btn-primary full-width" type="submit">
-                    Entrar
-                </button>
+    <table id="tabela-clientes">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Telefone</th>
+          <th>CPF</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-                <p id="login-erro" class="erro-text"></p>
-            </form>
-        </div>
-    </section>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="pagina fade-in" style="display:none;">
-        <h2>Dashboard</h2>
-
-        <div class="dashboard-grid">
-            <div class="card stat-card">
-                <span class="stat-label">Visitas</span>
-                <span class="stat-value" id="cont-visitas">0</span>
-            </div>
-
-            <div class="card stat-card">
-                <span class="stat-label">Cliques nas imagens</span>
-                <span class="stat-value" id="cont-cliques-imagem">0</span>
-            </div>
-
-            <div class="card stat-card">
-                <span class="stat-label">Orçamentos</span>
-                <span class="stat-value" id="cont-orcamento">0</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- UPLOAD -->
-    <section id="upload" class="pagina fade-in" style="display:none;">
-        <h2>Adicionar Fotos</h2>
-
-        <div class="card">
-            <label class="file-label">
-                Escolher imagem
-                <input type="file" id="imagem" accept="image/*">
-            </label>
-
-            <button class="btn-primary" onclick="adicionarFoto()">
-                Enviar Foto
-            </button>
-        </div>
-    </section>
-
-    <!-- CLIENTES -->
-    <section id="clientes" class="pagina fade-in" style="display:none;">
-        <h2>Clientes Cadastrados</h2>
-
-        <div class="card">
-            <table width="100%" id="tabela-clientes">
-                <thead>
-                    <tr>
-                        <th>E-mail</th>
-                        <th>Telefone</th>
-                        <th>CPF</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
+    <button onclick="logout()">Sair</button>
+  </section>
 
 </div>
 
-<script src="./admin.js" defer></script>
+<script src="admin.js"></script>
 </body>
 </html>
