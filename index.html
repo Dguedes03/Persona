@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier da Ana</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="app-container">
+
+    <!-- CABEÇALHO -->
+    <header class="header fade-in">
+        <div class="logo">Atelier da Ana</div>
+        <div class="subtitle">Arte feita com carinho, sob medida para você ✨</div>
+    </header>
+
+    <!-- MENU -->
+    <nav class="navbar slide-down">
+        <button onclick="mostrarPagina('galeria')">Galeria</button>
+        <button onclick="mostrarPagina('contato')">Contato</button>
+        <button id="btn-dashboard" style="display:none;" onclick="mostrarPagina('dashboard')">Dashboard</button>
+        <button id="btn-admin" style="display:none;" onclick="mostrarPagina('admin')">Área da Dona</button>
+        <button id="btn-login" onclick="mostrarPagina('login')">Login</button>
+        <button id="btn-logout" style="display:none;" onclick="logout()">Sair</button>
+    </nav>
+
+    <!-- GALERIA -->
+    <section id="galeria" class="pagina fade-in">
+        <h2>Trabalhos Recentes</h2>
+        <p class="section-subtitle">Veja algumas peças especiais feitas no Atelier da Ana.</p>
+
+        <div id="lista-fotos" class="galeria-grid">
+            <!-- Fotos vão aparecer aqui -->
+        </div>
+    </section>
+
+    <!-- CONTATO -->
+    <section id="contato" class="pagina fade-in" style="display:none;">
+        <h2>Contato</h2>
+        <p class="section-subtitle">Entre em contato para dúvidas ou orçamento.</p>
+
+        <div class="card">
+            <p><strong>WhatsApp:</strong> (16) 97405-4147</p>
+            <p><strong>Instagram:</strong> @atelie.angellica</p>
+            <button class="btn-primary" onclick="fazerOrcamento()">Fazer orçamento pelo WhatsApp</button>
+        </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="pagina fade-in" style="display:none;">
+        <h2>Dashboard</h2>
+        <p class="section-subtitle">Acompanhe os números do seu atelier em tempo real.</p>
+
+        <div class="dashboard-grid">
+
+            <div class="card stat-card">
+                <span class="stat-label">Total de visitas</span>
+                <span class="stat-value" id="cont-visitas">0</span>
+            </div>
+
+            <div class="card stat-card">
+                <span class="stat-label">Cliques nas imagens</span>
+                <span class="stat-value" id="cont-cliques-imagem">0</span>
+            </div>
+
+            <div class="card stat-card">
+                <span class="stat-label">Cliques em “Fazer orçamento”</span>
+                <span class="stat-value" id="cont-orcamento">0</span>
+            </div>
+
+            <div class="card stat-card">
+                <span class="stat-label">Quantidade de fotos</span>
+                <span class="stat-value" id="cont-fotos">0</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ÁREA DA DONA -->
+    <section id="admin" class="pagina fade-in" style="display:none;">
+        <h2>Área da Dona</h2>
+        <p class="section-subtitle">Envie novas fotos para sua vitrine online.</p>
+
+        <div class="card">
+            <label class="file-label">
+                Escolher imagem
+                <input type="file" id="imagem" accept="image/*">
+            </label>
+            <button class="btn-primary" onclick="adicionarFoto()">Enviar Foto</button>
+        </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="login" class="pagina fade-in" style="display:none;">
+        <h2>Login da Dona</h2>
+        <p class="section-subtitle">Acesse para gerenciar fotos e ver o dashboard.</p>
+
+        <div class="card card-login">
+            <form id="login-form">
+                <label>E-mail</label>
+                <input type="email" id="login-email" placeholder="exemplo@atelier.com" required>
+
+                <label>Senha</label>
+                <input type="password" id="login-senha" placeholder="********" required>
+
+                <button class="btn-primary full-width" type="submit">Entrar</button>
+                <button type="button" class="btn-secondary full-width" onclick="criarConta()">Criar conta da dona</button>
+
+                <p id="login-erro" class="erro-text"></p>
+            </form>
+        </div>
+    </section>
+
+</div>
+
+<!-- ARQUIVO JS PRINCIPAL -->
+<script src="app.js"></script>
+</body>
+</html>
