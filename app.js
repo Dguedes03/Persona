@@ -1,137 +1,105 @@
 // ==========================
 // 1. CONFIGURAÇÃO SUPABASE
 // ==========================
-
-// ⚠️ TROQUE PELOS SEUS DADOS DO PAINEL SUPABASE → Settings / API
 const SUPABASE_URL = "https://synsdzdwnswxgjzzwiqg.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_S0H_Xqtfe0O133uu_L-SMg_yCaIROqF";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let currentUser = null;
+const ADMIN_EMAIL = "andradegdaniel03@gmail.com";
 
-// ==========================D
+let currentUser = null;
+let currentProfile = null;
+
+// ==========================
 // 2. CONTROLE DE PÁGINAS
 // ==========================
 function mostrarPagina(pagina) {
-    document.querySelectorAll(".pagina").forEach(sec => {
-        sec.style.display = "none";
-    });
-    const alvo = document.getElementById(pagina);
-    if (alvo) alvo.style.display = "block";
+    document.querySelectorAll(".pagina").forEach(sec => sec.style.display = "none");
+    document.getElementById(pagina)?.style.display = "block";
 }
 
 // ==========================
-// 3. AUTENTICAÇÃO (LOGIN)
+// 3. AUTENTICAÇÃO
 // ==========================
-async function atualizarUIAuth() {
-    const btnDashboard = document.getElementById("btn-dashboard");
-    const btnAdmin = document.getElementById("btn-admin");
-    const btnLogin = document.getElementById("btn-login");
-    const btnLogout = document.getElementById("btn-logout");
+async function initAuth() {
+    const { data } = await supabase.auth.getUser();
+    currentUser = data.user || null;
 
     if (currentUser) {
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", currentUser.id)
+            .single();
+
+        currentProfile = profile;
+    }
+
+    ajustarUI();
+}
+
+function ajustarUI() {
+    const btnDashboard = document.getElementById("btn-dashboard");
+    const btnAdmin = document.getElementById("btn-admin");
+
+    if (currentProfile?.role === "admin") {
         btnDashboard.style.display = "inline-block";
         btnAdmin.style.display = "inline-block";
-        btnLogout.style.display = "inline-block";
-        btnLogin.style.display = "inline-block";
-
         mostrarPagina("dashboard");
         atualizarDashboard();
     } else {
         btnDashboard.style.display = "none";
         btnAdmin.style.display = "none";
-        btnLogout.style.display = "none";
-        btnLogin.style.display = "inline-block";
-
         mostrarPagina("galeria");
     }
 }
 
-async function initAuth() {
-    // Verifica sessão atual
-    const { data } = await supabase.auth.getUser();
-    currentUser = data.user || null;
-    atualizarUIAuth();
-
-    // Monitora mudanças de login/logout
-    supabase.auth.onAuthStateChange((_event, session) => {
-        currentUser = session?.user ?? null;
-        atualizarUIAuth();
-    });
-}
-
 // LOGIN
-const loginForm = document.getElementById("login-form");
-if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("login-email").value;
-        const senha = document.getElementById("login-senha").value;
-        const erroElem = document.getElementById("login-erro");
+document.getElementById("login-form")?.addEventListener("submit", async e => {
+    e.preventDefault();
 
-        erroElem.textContent = "";
+    const email = login-email.value;
+    const senha = login-senha.value;
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password: senha
-        });
-
-        if (error) {
-            erroElem.textContent = "Erro ao fazer login. Verifique email e senha.";
-        } else {
-            mostrarPagina("dashboard");
-            atualizarUIAuth();
-        }
-    });
-}
-
-// CRIAR CONTA (dona)
-async function criarConta() {
-    const email = document.getElementById("login-email").value;
-    const senha = document.getElementById("login-senha").value;
-    const erroElem = document.getElementById("login-erro");
-
-    erroElem.textContent = "";
-
-    if (!email || !senha) {
-        erroElem.textContent = "Digite email e senha.";
-        return;
-    }
-
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password: senha
     });
 
     if (error) {
-        erroElem.textContent = "Erro ao criar conta: " + error.message;
-    } else {
-        erroElem.textContent = "Conta criada! Faça login.";
+        alert("Email ou senha inválidos");
+        return;
     }
-}
+
+    // trava admin por email
+    if (email === ADMIN_EMAIL) {
+        currentUser = data.user;
+    } else {
+        currentUser = data.user;
+    }
+
+    location.reload();
+});
 
 // LOGOUT
 async function logout() {
     await supabase.auth.signOut();
-    currentUser = null;
-    atualizarUIAuth();
+    location.reload();
 }
 
 // ==========================
-// 4. ESTATÍSTICAS
+// 4. ESTATÍSTICAS (ADMIN)
 // ==========================
 async function buscarStats() {
-    const { data, error } = await supabase
+    if (currentProfile?.role !== "admin") return null;
+
+    const { data } = await supabase
         .from("stats")
         .select("*")
         .eq("id", 1)
         .single();
 
-    if (error) {
-        console.error(error);
-        return null;
-    }
     return data;
 }
 
@@ -139,153 +107,84 @@ async function atualizarDashboard() {
     const stats = await buscarStats();
     if (!stats) return;
 
-    document.getElementById("cont-visitas").textContent = stats.visitas ?? 0;
-    document.getElementById("cont-cliques-imagem").textContent = stats.cliques_imagem ?? 0;
-    document.getElementById("cont-orcamento").textContent = stats.cliques_orcamento ?? 0;
+    cont-visitas.textContent = stats.visitas;
+    cont-cliques-imagem.textContent = stats.cliques_imagem;
+    cont-orcamento.textContent = stats.cliques_orcamento;
 }
 
 async function incrementarCampo(campo) {
     const stats = await buscarStats();
     if (!stats) return;
 
-    const novoValor = (stats[campo] || 0) + 1;
-
     await supabase
         .from("stats")
-        .update({ [campo]: novoValor })
+        .update({ [campo]: stats[campo] + 1 })
         .eq("id", 1);
-
-    atualizarDashboard();
-}
-
-async function registrarVisita() {
-    await incrementarCampo("visitas");
 }
 
 // ==========================
-// 5. FOTOS (GALERIA + UPLOAD)
+// 5. GALERIA
 // ==========================
-const fotosContainer = document.getElementById("lista-fotos");
-
 async function carregarFotos() {
-    const { data, error } = await supabase
+    const { data } = await supabase
         .from("photos")
         .select("*")
         .order("created_at", { ascending: false });
 
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    fotosContainer.innerHTML = "";
-    let totalFotos = 0;
+    lista-fotos.innerHTML = "";
 
     data.forEach(foto => {
-        if (!foto.url) return;
-        totalFotos++;
-
-        const card = document.createElement("div");
-        card.className = "foto-card";
-
         const img = document.createElement("img");
         img.src = foto.url;
 
+        // BLUR para visitante
+        if (!currentUser) {
+            img.classList.add("img-blur");
+        }
+
         img.onclick = () => incrementarCampo("cliques_imagem");
-
-        const shareBtn = document.createElement("button");
-        shareBtn.className = "share-btn";
-        shareBtn.innerText = "Baixar p/ compartilhar";
-        shareBtn.onclick = () => compartilhar(foto.url);
-
-        const orcBtn = document.createElement("button");
-        orcBtn.className = "share-btn";
-        orcBtn.innerText = "Fazer orçamento";
-        orcBtn.onclick = () => fazerOrcamento();
-
-        card.appendChild(img);
-        card.appendChild(shareBtn);
-        card.appendChild(orcBtn);
-
-        fotosContainer.appendChild(card);
+        lista-fotos.appendChild(img);
     });
-
-    const contFotos = document.getElementById("cont-fotos");
-    if (contFotos) contFotos.textContent = totalFotos;
 }
 
+// ==========================
+// 6. UPLOAD (APENAS ADMIN)
+// ==========================
 async function adicionarFoto() {
-    if (!currentUser) {
-        alert("Faça login para enviar fotos.");
-        mostrarPagina("login");
+    if (currentProfile?.role !== "admin") {
+        alert("Apenas administradora pode adicionar fotos.");
         return;
     }
 
-    const fileInput = document.getElementById("imagem");
-    const file = fileInput.files[0];
+    const file = imagem.files[0];
+    if (!file) return alert("Selecione uma imagem");
 
-    if (!file) {
-        alert("Selecione uma imagem!");
-        return;
-    }
+    const name = Date.now() + "-" + file.name;
 
-    const fileName = Date.now() + "-" + file.name;
+    await supabase.storage.from("photos").upload(name, file);
+    const { data } = supabase.storage.from("photos").getPublicUrl(name);
 
-    // Upload
-    const { error: uploadError } = await supabase
-        .storage
-        .from("photos")
-        .upload(fileName, file);
-
-    if (uploadError) {
-        console.error(uploadError);
-        alert("Erro ao enviar foto.");
-        return;
-    }
-
-    // Get public URL
-    const { data: publicData } = supabase
-        .storage
-        .from("photos")
-        .getPublicUrl(fileName);
-
-    const publicUrl = publicData.publicUrl;
-
-    await supabase
-        .from("photos")
-        .insert({ url: publicUrl });
-
-    alert("Foto adicionada!");
-    fileInput.value = "";
+    await supabase.from("photos").insert({ url: data.publicUrl });
     carregarFotos();
 }
 
 // ==========================
-// 6. COMPARTILHAR + ORÇAMENTO
+// 7. ORÇAMENTO
 // ==========================
-function compartilhar(imgURL) {
-    const link = document.createElement("a");
-    link.href = imgURL;
-    link.download = "atelier-da-ana.jpg";
-    link.click();
-}
-
 function fazerOrcamento() {
     incrementarCampo("cliques_orcamento");
 
-    const mensagem = encodeURIComponent(
+    const msg = encodeURIComponent(
         "Olá! Me interessei pelo seu trabalho e gostaria de pedir um orçamento."
     );
 
-    window.open("https://wa.me/5516974054147?text=" + mensagem, "_blank");
+    window.open("https://wa.me/5516974054147?text=" + msg, "_blank");
 }
 
 // ==========================
-// 7. INICIALIZAÇÃO
+// INIT
 // ==========================
-window.addEventListener("load", async () => {
+window.onload = async () => {
     await initAuth();
-    await registrarVisita();
     await carregarFotos();
-    mostrarPagina("galeria");
-});
+};

@@ -276,3 +276,35 @@ input[type="password"] {
         flex-wrap: wrap;
     }
 }
+
+/* ===== IMAGENS BORRADAS PARA VISITANTES ===== */
+.img-blur {
+    filter: blur(10px);
+    pointer-events: none;
+    transition: filter 0.3s ease;
+}
+ 
+/* ===== OVERLAY LOGIN ===== */
+.img-blur-wrapper {
+    position: relative;
+}
+
+.img-blur-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
