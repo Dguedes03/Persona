@@ -1,310 +1,94 @@
-/* Layout geral */
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #fafafa;
-    color: #333;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fafafa;
+  color: #333;
 }
 
 .app-container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding-bottom: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-bottom: 40px;
 }
 
-/* Cabeçalho */
 .header {
-    background: #ffb6c1; /* rosa claro */
-    padding: 30px 20px 40px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    border-radius: 0 0 30px 30px;
+  background: #ffb6c1;
+  padding: 30px 20px 40px;
+  text-align: center;
+  border-radius: 0 0 30px 30px;
 }
 
 .logo {
-    font-family: "Brush Script MT", cursive;
-    font-size: 52px;
-    color: #222;
+  font-family: "Brush Script MT", cursive;
+  font-size: 52px;
 }
 
-.subtitle {
-    margin-top: 8px;
-    font-size: 16px;
-    opacity: 0.9;
-}
-
-/* Navegação */
 .navbar {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 15px 10px 25px;
-    position: sticky;
-    top: 0;
-    background: #fafafa;
-    z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
 }
 
 .navbar button {
-    padding: 9px 18px;
-    cursor: pointer;
-    background: white;
-    border-radius: 20px;
-    border: 1px solid #ffd6df;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    font-size: 14px;
+  padding: 9px 18px;
+  border-radius: 20px;
+  border: 1px solid #ffd6df;
+  background: white;
+  cursor: pointer;
 }
 
-.navbar button:hover {
-    background: #ffe3ea;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Seções */
 .pagina {
-    padding: 20px;
+  padding: 20px;
 }
 
-h2 {
-    font-size: 26px;
-    margin-bottom: 5px;
-}
-
-.section-subtitle {
-    margin-bottom: 20px;
-    color: #777;
-    font-size: 14px;
-}
-
-/* Cards / contêineres */
 .card {
-    background: white;
-    padding: 18px 20px;
-    border-radius: 16px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-    margin-bottom: 20px;
+  background: white;
+  padding: 18px;
+  border-radius: 16px;
 }
 
 .card-login {
-    max-width: 380px;
-    margin: 0 auto;
+  max-width: 380px;
+  margin: 0 auto;
 }
 
-/* Formulários */
-label {
-    display: block;
-    margin: 8px 0 4px;
-    font-size: 14px;
-}
-
-input[type="email"],
-input[type="password"] {
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    font-size: 14px;
-}
-
-/* Botões gerais */
 .btn-primary {
-    background: #ff7f9b;
-    color: white;
-    border: none;
-    border-radius: 18px;
-    padding: 10px 18px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.btn-primary:hover {
-    background: #ff6689;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  background: #ff7f9b;
+  color: white;
+  border: none;
+  border-radius: 18px;
+  padding: 10px;
 }
 
 .btn-secondary {
-    background: white;
-    color: #ff6689;
-    border: 1px solid #ff99af;
-    border-radius: 18px;
-    padding: 8px 18px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 8px;
-    transition: background 0.2s ease;
-}
-
-.btn-secondary:hover {
-    background: #fff4f7;
+  background: white;
+  border: 1px solid #ff99af;
+  border-radius: 18px;
+  padding: 8px;
 }
 
 .full-width {
-    width: 100%;
+  width: 100%;
 }
 
-.helper-text {
-    font-size: 12px;
-    color: #888;
-    margin-top: 10px;
-}
-
-/* Upload */
-.file-label {
-    display: inline-block;
-    padding: 8px 15px;
-    background: #ffe3ea;
-    border-radius: 20px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    font-size: 14px;
-}
-
-.file-label input {
-    display: none;
-}
-
-/* Galeria */
 .galeria-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.foto-card {
-    background: white;
-    border-radius: 16px;
-    padding: 10px;
-    width: 210px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.galeria-grid img {
+  width: 210px;
+  border-radius: 12px;
 }
 
-.foto-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-}
-
-.foto-card img {
-    width: 100%;
-    border-radius: 12px;
-    cursor: pointer;
-    margin-bottom: 8px;
-}
-
-/* Botões dentro do card */
-.share-btn {
-    margin-top: 4px;
-    margin-bottom: 4px;
-    padding: 6px 10px;
-    background: #ffb6c1;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background 0.2s;
-}
-
-.share-btn:hover {
-    background: #ff99aa;
-}
-
-/* Dashboard */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-}
-
-.stat-card {
-    text-align: center;
-}
-
-.stat-label {
-    font-size: 13px;
-    color: #888;
-}
-
-.stat-value {
-    display: block;
-    font-size: 26px;
-    font-weight: bold;
-    margin-top: 6px;
-    color: #ff6689;
-}
-
-/* Mensagens de erro */
-.erro-text {
-    color: #c0392b;
-    font-size: 13px;
-    margin-top: 8px;
-}
-
-/* Animações */
-.fade-in {
-    animation: fadeIn 0.6s ease-out;
-}
-
-.slide-down {
-    animation: slideDown 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-    .header {
-        padding: 20px 10px 25px;
-    }
-    .logo {
-        font-size: 38px;
-    }
-    .navbar {
-        flex-wrap: wrap;
-    }
-}
-
-/* ===== IMAGENS BORRADAS PARA VISITANTES ===== */
 .img-blur {
-    filter: blur(10px);
-    pointer-events: none;
-    transition: filter 0.3s ease;
-}
- 
-/* ===== OVERLAY LOGIN ===== */
-.img-blur-wrapper {
-    position: relative;
+  filter: blur(10px);
+  pointer-events: none;
 }
 
-.img-blur-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.55);
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    pointer-events: auto;
-    cursor: pointer;
+.erro-text {
+  color: #c0392b;
+  font-size: 13px;
 }
-
