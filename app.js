@@ -1,4 +1,4 @@
-const SUPABASE_URL = "https://synsdzdwnswxgjzzwiqg.supabase.co";
+const SUPABASE_URL = "https://synsdzdwnswxgjzzwiqg.supabase.com";
 const SUPABASE_ANON_KEY = "sb_publishable_S0H_Xqtfe0O133uu_L-SMg_yCaIROqF";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const ADMIN_EMAIL = "andradegdaniel03@gmail.com";
