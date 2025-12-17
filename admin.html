@@ -1,52 +1,36 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin - Atelier da Ana</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
+<h2>Área da Administradora</h2>
 
-<div class="app-container">
+<section id="login-admin" class="pagina">
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Email">
+    <input type="password" id="login-senha" placeholder="Senha">
+    <button class="btn-primary">Entrar</button>
+    <p id="login-erro" class="erro-text"></p>
+  </form>
+</section>
 
-  <h2>Área da Administradora</h2>
+<section id="dashboard" class="pagina" style="display:none;">
+  <h3>Dashboard</h3>
 
-  <section id="login-admin" class="pagina">
-    <form id="login-form">
-      <input type="email" id="login-email" placeholder="Email">
-      <input type="password" id="login-senha" placeholder="Senha">
-      <button class="btn-primary">Entrar</button>
-      <p id="login-erro" class="erro-text"></p>
-    </form>
-  </section>
+  <p>Visitas: <span id="cont-visitas">0</span></p>
+  <p>Cliques imagens: <span id="cont-cliques-imagem">0</span></p>
+  <p>Orçamentos: <span id="cont-orcamento">0</span></p>
 
-  <section id="dashboard" class="pagina" style="display:none;">
-    <h3>Dashboard</h3>
+  <input type="file" id="imagem">
+  <button onclick="adicionarFoto()">Enviar Foto</button>
 
-    <p>Visitas: <span id="cont-visitas">0</span></p>
-    <p>Cliques imagens: <span id="cont-cliques-imagem">0</span></p>
-    <p>Orçamentos: <span id="cont-orcamento">0</span></p>
+  <table id="tabela-clientes">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>CPF</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-    <input type="file" id="imagem">
-    <button onclick="adicionarFoto()">Enviar Foto</button>
-
-    <table id="tabela-clientes">
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>Telefone</th>
-          <th>CPF</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <button id="logout">Sair</button>
-  </section>
-
-</div>
+  <button id="btn-logout">Sair</button>
+</section>
 
 <script src="./admin.js"></script>
-</body>
-</html>
