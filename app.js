@@ -110,7 +110,8 @@ document.getElementById("login-form")?.addEventListener("submit", async e => {
     return;
   }
 
-  location.reload();
+  await initAuth();
+  mostrarPagina("galeria");
 });
 
 // ==========================
