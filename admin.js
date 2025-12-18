@@ -47,7 +47,6 @@ async function initAdmin() {
   carregarDashboard();
   carregarClientes();
 }
-console.log("USER:", currentUser);
 
 
 // LOGIN ADMIN
