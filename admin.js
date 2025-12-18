@@ -47,6 +47,8 @@ async function initAdmin() {
   carregarDashboard();
   carregarClientes();
 }
+console.log("USER:", currentUser);
+
 
 // LOGIN ADMIN
 document.getElementById("login-form")?.addEventListener("submit", async e => {
