@@ -9,7 +9,7 @@ const supabase = window.supabase.createClient(
   SUPABASE_ANON_KEY
 );
 
-const ADMIN_EMAIL = "andradegdaniel03@gmail.com";
+const ADMIN_EMAIL = "";
 
 // ==========================
 // ELEMENTOS
