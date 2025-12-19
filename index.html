@@ -25,12 +25,14 @@
     <button id="btn-logout">Sair</button>
   </nav>
 
+  <!-- GALERIA -->
   <section id="galeria" class="pagina">
     <h2>Trabalhos</h2>
     <p class="section-subtitle">Faça login para visualizar as imagens</p>
     <div id="lista-fotos" class="galeria-grid"></div>
   </section>
 
+  <!-- LOGIN / CADASTRO -->
   <section id="login" class="pagina" style="display:none;">
     <h2>Acesso</h2>
 
@@ -47,21 +49,35 @@
           <a href="#" onclick="mostrarPagina('recuperar')">Esqueci minha senha</a>
         </p>
 
-        <div id="campos-cadastro" style="display:none;">
+        <!-- CAMPOS DE CADASTRO (OCULTOS INICIALMENTE) -->
+        <div id="campos-cadastro" style="display:none; margin-top: 16px;">
           <label>CPF</label>
           <input type="text" id="cadastro-cpf">
 
           <label>Telefone</label>
           <input type="text" id="cadastro-telefone">
+
+          <button
+            type="button"
+            class="btn-primary full-width"
+            onclick="criarConta()"
+            style="margin-top: 12px;"
+          >
+            Confirmar cadastro
+          </button>
         </div>
 
-        <button class="btn-primary full-width" type="submit">Entrar</button>
+        <!-- LOGIN -->
+        <button class="btn-primary full-width" type="submit">
+          Entrar
+        </button>
 
+        <!-- MOSTRAR CADASTRO -->
         <button
           type="button"
           class="btn-secondary full-width"
           id="btn-toggle-cadastro"
-          onclick="criarConta()"
+          onclick="mostrarCadastro()"
         >
           Criar conta
         </button>
@@ -71,6 +87,7 @@
     </div>
   </section>
 
+  <!-- RECUPERAR SENHA -->
   <section id="recuperar" class="pagina" style="display:none;">
     <h2>Recuperar senha</h2>
 
@@ -92,7 +109,7 @@
 
 </div>
 
-<!-- App público -->
+<!-- JS DA APLICAÇÃO -->
 <script src="./app.js"></script>
 </body>
 </html>

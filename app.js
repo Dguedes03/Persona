@@ -4,7 +4,7 @@
 const SUPABASE_URL = "https://synsdzdwnswxgjzzwiqg.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_S0H_Xqtfe0O133uu_L-SMg_yCaIROqF";
 
-const supabase = window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
@@ -17,23 +17,19 @@ const ADMIN_EMAIL = "andradegdaniel03@gmail.com";
 const listaFotos = document.getElementById("lista-fotos");
 const loginEmail = document.getElementById("login-email");
 const loginSenha = document.getElementById("login-senha");
+const loginErro = document.getElementById("login-erro");
+
+const camposCadastro = document.getElementById("campos-cadastro");
 const cadastroCPF = document.getElementById("cadastro-cpf");
 const cadastroTelefone = document.getElementById("cadastro-telefone");
-const loginErro = document.getElementById("login-erro");
-const camposCadastro = document.getElementById("campos-cadastro");
-const btnToggleCadastro = document.getElementById("btn-toggle-cadastro");
-const btnLogout = document.getElementById("btn-logout");
 
+const btnLogout = document.getElementById("btn-logout");
 const recuperarEmail = document.getElementById("recuperar-email");
 const recuperarMsg = document.getElementById("recuperar-msg");
 
 // ==========================
-// ESTADO
-// ==========================
 let currentUser = null;
 
-// ==========================
-// CONTROLE DE PÁGINAS
 // ==========================
 function mostrarPagina(id) {
   document.querySelectorAll(".pagina").forEach(p => {
@@ -45,7 +41,11 @@ function mostrarPagina(id) {
 }
 
 // ==========================
-// CPF
+function mostrarCadastro() {
+  camposCadastro.style.display = "block";
+  loginErro.textContent = "";
+}
+
 // ==========================
 function validarCPF(cpf) {
   cpf = cpf.replace(/[^\d]/g, "");
@@ -66,21 +66,17 @@ function validarCPF(cpf) {
 }
 
 // ==========================
-// AUTH INIT
-// ==========================
 async function initAuth() {
-  const { data } = await supabase.auth.getUser();
+  const { data } = await supabaseClient.auth.getUser();
   currentUser = data.user || null;
   carregarFotos();
 }
 
 // ==========================
-// LOGIN
-// ==========================
 document.getElementById("login-form")?.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabaseClient.auth.signInWithPassword({
     email: loginEmail.value,
     password: loginSenha.value
   });
@@ -94,8 +90,6 @@ document.getElementById("login-form")?.addEventListener("submit", async e => {
   mostrarPagina("galeria");
 });
 
-// ==========================
-// CADASTRO
 // ==========================
 async function criarConta() {
   loginErro.textContent = "";
@@ -111,11 +105,11 @@ async function criarConta() {
   }
 
   if (loginEmail.value === ADMIN_EMAIL) {
-    loginErro.textContent = "Email reservado para administradora";
+    loginErro.textContent = "Email reservado";
     return;
   }
 
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await supabaseClient.auth.signUp({
     email: loginEmail.value,
     password: loginSenha.value
   });
@@ -125,29 +119,21 @@ async function criarConta() {
     return;
   }
 
-  await supabase.from("profiles").insert({
+  await supabaseClient.from("profiles").insert({
     id: data.user.id,
     role: "cliente",
     cpf: cadastroCPF.value,
     telefone: cadastroTelefone.value
   });
 
+  loginErro.style.color = "green";
   loginErro.textContent = "Conta criada! Faça login.";
+  camposCadastro.style.display = "none";
 }
 
 // ==========================
-// LOGOUT
-// ==========================
-btnLogout?.addEventListener("click", async () => {
-  await supabase.auth.signOut();
-  location.reload();
-});
-
-// ==========================
-// GALERIA
-// ==========================
 async function carregarFotos() {
-  const { data } = await supabase.from("photos").select("*");
+  const { data } = await supabaseClient.from("photos").select("*");
   listaFotos.innerHTML = "";
 
   data?.forEach(foto => {
@@ -159,11 +145,15 @@ async function carregarFotos() {
 }
 
 // ==========================
-// RECUPERAR SENHA
-// ==========================
 async function enviarRecuperacao() {
-  const { error } = await supabase.auth.resetPasswordForEmail(recuperarEmail.value);
-  recuperarMsg.textContent = error ? "Erro ao enviar email." : "Email enviado.";
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(recuperarEmail.value);
+  recuperarMsg.textContent = error ? "Erro ao enviar email" : "Email enviado";
 }
+
+// ==========================
+btnLogout?.addEventListener("click", async () => {
+  await supabaseClient.auth.signOut();
+  location.reload();
+});
 
 window.onload = initAuth;
