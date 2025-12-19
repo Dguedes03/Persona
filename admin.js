@@ -12,7 +12,7 @@ const supabase = window.supabase.createClient(
 const ADMIN_EMAIL = "andradegdaniel03@gmail.com";
 
 // ==========================
-// ELEMENTOS DO DOM
+// ELEMENTOS
 // ==========================
 const contVisitas = document.getElementById("cont-visitas");
 const contCliquesImagem = document.getElementById("cont-cliques-imagem");
@@ -24,186 +24,111 @@ const btnLogout = document.getElementById("btn-logout");
 // ESTADO
 // ==========================
 let currentUser = null;
-let currentProfile = null;
 
 // ==========================
-// CONTROLE DE TELAS
+// TELAS
 // ==========================
 function mostrarPagina(id) {
-  document.querySelectorAll(".pagina").forEach(p => {
-    p.style.display = "none";
-  });
+  document.querySelectorAll(".pagina").forEach(p => p.style.display = "none");
   document.getElementById(id)?.style.display = "block";
 }
 
 // ==========================
-// INIT ADMIN
+// INIT
 // ==========================
 async function initAdmin() {
-  const { data: authData } = await supabase.auth.getUser();
-  currentUser = authData?.user || null;
+  const { data } = await supabase.auth.getUser();
+  currentUser = data.user;
 
   if (!currentUser) {
     mostrarPagina("login-admin");
     return;
   }
 
-  // Busca perfil
-  const { data: profile, error } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", currentUser.id)
     .single();
 
-  if (error || !profile || profile.role !== "admin") {
+  if (!profile || profile.role !== "admin") {
     await supabase.auth.signOut();
     mostrarPagina("login-admin");
     return;
   }
 
-  currentProfile = profile;
-
   mostrarPagina("dashboard");
-  await carregarDashboard();
-  await carregarClientes();
+  carregarDashboard();
+  carregarClientes();
 }
 
 // ==========================
-// LOGIN ADMIN
+// LOGIN
 // ==========================
 document.getElementById("login-form")?.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const email = document.getElementById("login-email").value;
-  const senha = document.getElementById("login-senha").value;
-  const erro = document.getElementById("login-erro");
-
-  erro.textContent = "";
-
-  if (email !== ADMIN_EMAIL) {
-    erro.textContent = "Acesso exclusivo da administradora.";
+  if (document.getElementById("login-email").value !== ADMIN_EMAIL) {
+    document.getElementById("login-erro").textContent = "Acesso restrito";
     return;
   }
 
   const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password: senha
+    email: document.getElementById("login-email").value,
+    password: document.getElementById("login-senha").value
   });
 
   if (error) {
-    erro.textContent = "Email ou senha inválidos.";
+    document.getElementById("login-erro").textContent = "Erro de login";
     return;
   }
 
-  await initAdmin();
+  initAdmin();
 });
 
 // ==========================
-// LOGOUT
-// ==========================
-btnLogout?.addEventListener("click", async () => {
-  await supabase.auth.signOut();
-  mostrarPagina("login-admin");
-});
-
-// ==========================
-// DASHBOARD (STATS)
+// DASHBOARD
 // ==========================
 async function carregarDashboard() {
-  const { data, error } = await supabase
-    .from("stats")
-    .select("*")
-    .eq("id", 1)
-    .single();
-
-  if (error || !data) {
-    console.error("Erro ao carregar stats", error);
-    return;
-  }
-
-  contVisitas.textContent = data.visitas ?? 0;
-  contCliquesImagem.textContent = data.cliques_imagem ?? 0;
-  contOrcamento.textContent = data.cliques_orcamento ?? 0;
+  const { data } = await supabase.from("stats").select("*").eq("id", 1).single();
+  contVisitas.textContent = data.visitas;
+  contCliquesImagem.textContent = data.cliques_imagem;
+  contOrcamento.textContent = data.cliques_orcamento;
 }
 
 // ==========================
-// LISTAR CLIENTES
+// CLIENTES
 // ==========================
 async function carregarClientes() {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("telefone, cpf, role");
-
-  if (error) {
-    console.error("Erro ao carregar clientes", error);
-    return;
-  }
-
+  const { data } = await supabase.from("profiles").select("telefone, cpf, role");
   const tbody = document.querySelector("#tabela-clientes tbody");
   tbody.innerHTML = "";
 
   data.forEach(p => {
     if (p.role === "admin") return;
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>(email protegido)</td>
-      <td>${p.telefone || ""}</td>
-      <td>${p.cpf || ""}</td>
-    `;
-    tbody.appendChild(tr);
+    tbody.innerHTML += `<tr><td>(email)</td><td>${p.telefone}</td><td>${p.cpf}</td></tr>`;
   });
 }
 
 // ==========================
-// UPLOAD DE FOTOS
+// UPLOAD
 // ==========================
 async function adicionarFoto() {
-  if (!currentProfile) return;
-
   const file = imagemInput.files[0];
-  if (!file) {
-    alert("Selecione uma imagem");
-    return;
-  }
+  if (!file) return;
 
-  const nomeArquivo = `${Date.now()}-${file.name}`;
+  const name = `${Date.now()}-${file.name}`;
 
-  const { error: uploadError } = await supabase
-    .storage
-    .from("photos")
-    .upload(nomeArquivo, file);
+  await supabase.storage.from("photos").upload(name, file);
+  const { data } = supabase.storage.from("photos").getPublicUrl(name);
+  await supabase.from("photos").insert({ url: data.publicUrl });
 
-  if (uploadError) {
-    alert("Erro ao enviar imagem");
-    return;
-  }
-
-  const { data: urlData } = supabase
-    .storage
-    .from("photos")
-    .getPublicUrl(nomeArquivo);
-
-  const { error: insertError } = await supabase
-    .from("photos")
-    .insert({ url: urlData.publicUrl });
-
-  if (insertError) {
-    alert("Erro ao salvar imagem");
-    return;
-  }
-
-  alert("Foto enviada com sucesso!");
-  imagemInput.value = "";
+  alert("Foto enviada");
 }
 
-// ==========================
-// AUTO INIT
-// ==========================
-window.onload = () => {
-  initAdmin();
+btnLogout?.addEventListener("click", async () => {
+  await supabase.auth.signOut();
+  mostrarPagina("login-admin");
+});
 
-  supabase.auth.onAuthStateChange(() => {
-    initAdmin();
-  });
-};
+window.onload = initAdmin;

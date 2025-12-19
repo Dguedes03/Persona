@@ -24,12 +24,8 @@ const camposCadastro = document.getElementById("campos-cadastro");
 const btnToggleCadastro = document.getElementById("btn-toggle-cadastro");
 const btnLogout = document.getElementById("btn-logout");
 
-// Recuperação de senha
 const recuperarEmail = document.getElementById("recuperar-email");
 const recuperarMsg = document.getElementById("recuperar-msg");
-const novaSenha1 = document.getElementById("nova-senha1");
-const novaSenha2 = document.getElementById("nova-senha2");
-const novaSenhaMsg = document.getElementById("nova-senha-msg");
 
 // ==========================
 // ESTADO
@@ -70,19 +66,6 @@ function validarCPF(cpf) {
 }
 
 // ==========================
-// MOSTRAR CAMPOS CADASTRO
-// ==========================
-function mostrarCamposCadastro(show) {
-  if (camposCadastro) {
-    camposCadastro.style.display = show ? "block" : "none";
-  }
-}
-
-btnToggleCadastro?.addEventListener("click", () => {
-  mostrarCamposCadastro(true);
-});
-
-// ==========================
 // AUTH INIT
 // ==========================
 async function initAuth() {
@@ -97,12 +80,9 @@ async function initAuth() {
 document.getElementById("login-form")?.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const email = loginEmail.value;
-  const senha = loginSenha.value;
-
   const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password: senha
+    email: loginEmail.value,
+    password: loginSenha.value
   });
 
   if (error) {
@@ -115,34 +95,29 @@ document.getElementById("login-form")?.addEventListener("submit", async e => {
 });
 
 // ==========================
-// CADASTRO CLIENTE
+// CADASTRO
 // ==========================
 async function criarConta() {
-  const email = loginEmail.value;
-  const senha = loginSenha.value;
-  const cpf = cadastroCPF.value;
-  const telefone = cadastroTelefone.value;
-
   loginErro.textContent = "";
 
-  if (!email || !senha || !cpf || !telefone) {
+  if (!loginEmail.value || !loginSenha.value || !cadastroCPF.value || !cadastroTelefone.value) {
     loginErro.textContent = "Preencha todos os campos";
     return;
   }
 
-  if (!validarCPF(cpf)) {
+  if (!validarCPF(cadastroCPF.value)) {
     loginErro.textContent = "CPF inválido";
     return;
   }
 
-  if (email === ADMIN_EMAIL) {
+  if (loginEmail.value === ADMIN_EMAIL) {
     loginErro.textContent = "Email reservado para administradora";
     return;
   }
 
   const { data, error } = await supabase.auth.signUp({
-    email,
-    password: senha
+    email: loginEmail.value,
+    password: loginSenha.value
   });
 
   if (error) {
@@ -153,107 +128,42 @@ async function criarConta() {
   await supabase.from("profiles").insert({
     id: data.user.id,
     role: "cliente",
-    cpf,
-    telefone
+    cpf: cadastroCPF.value,
+    telefone: cadastroTelefone.value
   });
 
   loginErro.textContent = "Conta criada! Faça login.";
-  mostrarCamposCadastro(false);
 }
 
 // ==========================
 // LOGOUT
 // ==========================
-async function logout() {
+btnLogout?.addEventListener("click", async () => {
   await supabase.auth.signOut();
   location.reload();
-}
-
-btnLogout?.addEventListener("click", logout);
+});
 
 // ==========================
 // GALERIA
 // ==========================
 async function carregarFotos() {
-  const { data } = await supabase
-    .from("photos")
-    .select("*");
-
+  const { data } = await supabase.from("photos").select("*");
   listaFotos.innerHTML = "";
 
-  data.forEach(foto => {
+  data?.forEach(foto => {
     const img = document.createElement("img");
     img.src = foto.url;
-
-    if (!currentUser) {
-      img.classList.add("img-blur");
-    }
-
+    if (!currentUser) img.classList.add("img-blur");
     listaFotos.appendChild(img);
   });
 }
 
 // ==========================
-// RECUPERAR SENHA (EMAIL)
+// RECUPERAR SENHA
 // ==========================
 async function enviarRecuperacao() {
-  const email = recuperarEmail.value;
-  recuperarMsg.textContent = "";
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + window.location.pathname
-  });
-
-  if (error) {
-    recuperarMsg.textContent = "Erro ao enviar email.";
-  } else {
-    recuperarMsg.textContent = "Email enviado! Verifique sua caixa de entrada.";
-  }
+  const { error } = await supabase.auth.resetPasswordForEmail(recuperarEmail.value);
+  recuperarMsg.textContent = error ? "Erro ao enviar email." : "Email enviado.";
 }
 
-// ==========================
-// DETECTAR RECUPERAÇÃO
-// ==========================
-supabase.auth.onAuthStateChange((event) => {
-  if (event === "PASSWORD_RECOVERY") {
-    mostrarPagina("nova-senha");
-  }
-});
-
-// ==========================
-// DEFINIR NOVA SENHA
-// ==========================
-async function definirNovaSenha() {
-  const s1 = novaSenha1.value;
-  const s2 = novaSenha2.value;
-
-  novaSenhaMsg.textContent = "";
-
-  if (!s1 || !s2) {
-    novaSenhaMsg.textContent = "Preencha os dois campos.";
-    return;
-  }
-
-  if (s1 !== s2) {
-    novaSenhaMsg.textContent = "As senhas não coincidem.";
-    return;
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    password: s1
-  });
-
-  if (error) {
-    novaSenhaMsg.textContent = "Erro ao redefinir senha.";
-  } else {
-    novaSenhaMsg.textContent = "Senha redefinida com sucesso!";
-    setTimeout(() => {
-      mostrarPagina("login");
-    }, 1500);
-  }
-}
-
-// ==========================
-// INIT
-// ==========================
 window.onload = initAuth;

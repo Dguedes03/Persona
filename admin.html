@@ -1,9 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Área Administrativa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
 <h2>Área da Administradora</h2>
 
 <section id="login-admin" class="pagina">
   <form id="login-form">
-    <input type="email" id="login-email" placeholder="Email">
-    <input type="password" id="login-senha" placeholder="Senha">
+    <input type="email" id="login-email" placeholder="Email" required>
+    <input type="password" id="login-senha" placeholder="Senha" required>
     <button class="btn-primary">Entrar</button>
     <p id="login-erro" class="erro-text"></p>
   </form>
@@ -33,4 +47,7 @@
   <button id="btn-logout">Sair</button>
 </section>
 
+<!-- App admin -->
 <script src="./admin.js"></script>
+</body>
+</html>
