@@ -1,159 +1,106 @@
-// ==========================
-// CONFIGURAÇÃO SUPABASE
-// ==========================
-const SUPABASE_URL = "https://synsdzdwnswxgjzzwiqg.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_S0H_Xqtfe0O133uu_L-SMg_yCaIROqF";
+const API = "https://atelier-backend-ew43.onrender.com";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
 
-const ADMIN_EMAIL = "andradegdaniel03@gmail.com";
+let token = localStorage.getItem("token") || null;
 
-// ==========================
-// ELEMENTOS DO DOM
-// ==========================
-const listaFotos = document.getElementById("lista-fotos");
-const loginEmail = document.getElementById("login-email");
-const loginSenha = document.getElementById("login-senha");
-const loginErro = document.getElementById("login-erro");
-
-const camposCadastro = document.getElementById("campos-cadastro");
-const cadastroCPF = document.getElementById("cadastro-cpf");
-const cadastroTelefone = document.getElementById("cadastro-telefone");
-
-const btnLogout = document.getElementById("btn-logout");
-const recuperarEmail = document.getElementById("recuperar-email");
-const recuperarMsg = document.getElementById("recuperar-msg");
-
-// ==========================
-let currentUser = null;
-
-// ==========================
+// NAVEGAÇÃO
 function mostrarPagina(id) {
-  document.querySelectorAll(".pagina").forEach(p => {
-    p.style.display = "none";
-  });
-
-  const el = document.getElementById(id);
-  if (el) el.style.display = "block";
+  document.querySelectorAll(".pagina").forEach(p => (p.style.display = "none"));
+  document.getElementById(id)?.style.display = "block";
 }
 
-// ==========================
-function mostrarCadastro() {
-  camposCadastro.style.display = "block";
-  loginErro.textContent = "";
-}
-
-// ==========================
-function validarCPF(cpf) {
-  cpf = cpf.replace(/[^\d]/g, "");
-  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-
-  let soma = 0;
-  for (let i = 0; i < 9; i++) soma += cpf[i] * (10 - i);
-  let resto = (soma * 10) % 11;
-  if (resto === 10) resto = 0;
-  if (resto != cpf[9]) return false;
-
-  soma = 0;
-  for (let i = 0; i < 10; i++) soma += cpf[i] * (11 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10) resto = 0;
-
-  return resto == cpf[10];
-}
-
-// ==========================
-async function initAuth() {
-  const { data } = await supabaseClient.auth.getUser();
-  currentUser = data.user || null;
+// CONTAR VISITA (1x POR LOAD)
+window.onload = () => {
+  fetch(`${API}/stats/visit`, { method: "POST" });
   carregarFotos();
-}
+};
 
-// ==========================
+// LOGIN
 document.getElementById("login-form")?.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const { error } = await supabaseClient.auth.signInWithPassword({
-    email: loginEmail.value,
-    password: loginSenha.value
+  const email = loginEmail.value;
+  const password = loginSenha.value;
+
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
   });
 
-  if (error) {
+  const data = await res.json();
+
+  if (!res.ok) {
     loginErro.textContent = "Email ou senha inválidos";
     return;
   }
 
-  await initAuth();
+  //token correto (como o backend retorna)
+  token = data.access_token;
+  localStorage.setItem("token", token);
+
   mostrarPagina("galeria");
+  carregarFotos();
 });
 
-// ==========================
+// CADASTRO
 async function criarConta() {
   loginErro.textContent = "";
 
-  if (!loginEmail.value || !loginSenha.value || !cadastroCPF.value || !cadastroTelefone.value) {
-    loginErro.textContent = "Preencha todos os campos";
-    return;
-  }
-
-  if (!validarCPF(cadastroCPF.value)) {
-    loginErro.textContent = "CPF inválido";
-    return;
-  }
-
-  if (loginEmail.value === ADMIN_EMAIL) {
-    loginErro.textContent = "Email reservado";
-    return;
-  }
-
-  const { data, error } = await supabaseClient.auth.signUp({
-    email: loginEmail.value,
-    password: loginSenha.value
+  const res = await fetch(`${API}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: loginEmail.value,
+      password: loginSenha.value,
+      cpf: cadastroCPF.value,
+      telefone: cadastroTelefone.value
+    })
   });
 
-  if (error) {
-    loginErro.textContent = error.message;
+  if (!res.ok) {
+    loginErro.textContent = "Erro ao cadastrar";
     return;
   }
-
-  await supabaseClient.from("profiles").insert({
-    id: data.user.id,
-    role: "cliente",
-    cpf: cadastroCPF.value,
-    telefone: cadastroTelefone.value
-  });
 
   loginErro.style.color = "green";
   loginErro.textContent = "Conta criada! Faça login.";
-  camposCadastro.style.display = "none";
 }
 
-// ==========================
+
+// FOTOS + CLIQUE IMAGEM
 async function carregarFotos() {
-  const { data } = await supabaseClient.from("photos").select("*");
+  const res = await fetch(`${API}/photos`);
+  const fotos = await res.json();
+
   listaFotos.innerHTML = "";
 
-  data?.forEach(foto => {
+  fotos.forEach(foto => {
     const img = document.createElement("img");
     img.src = foto.url;
-    if (!currentUser) img.classList.add("img-blur");
+
+    if (!token) img.classList.add("img-blur");
+
+    // clique na imagem
+    img.onclick = () => {
+      fetch(`${API}/stats/click-image`, { method: "POST" });
+    };
+
     listaFotos.appendChild(img);
   });
 }
 
-// ==========================
-async function enviarRecuperacao() {
-  const { error } = await supabaseClient.auth.resetPasswordForEmail(recuperarEmail.value);
-  recuperarMsg.textContent = error ? "Erro ao enviar email" : "Email enviado";
-}
 
-// ==========================
-btnLogout?.addEventListener("click", async () => {
-  await supabaseClient.auth.signOut();
+// CLIQUE ORÇAMENTO (SE EXISTIR)
+document
+  .getElementById("btn-orcamento")
+  ?.addEventListener("click", () => {
+    fetch(`${API}/stats/click-orcamento`, { method: "POST" });
+  });
+
+
+// LOGOUT
+btnLogout?.addEventListener("click", () => {
+  localStorage.clear();
   location.reload();
 });
-
-window.onload = initAuth;
