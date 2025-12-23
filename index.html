@@ -1,42 +1,112 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Atelier da Ana</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <div class="app-container">
 
+  <!-- HEADER -->
   <header class="header">
     <div class="logo">Atelier da Ana</div>
     <div class="subtitle">Arte feita com carinho ✨</div>
   </header>
 
+  <!-- NAV -->
   <nav class="navbar">
     <button onclick="mostrarPagina('galeria')">Galeria</button>
     <button onclick="mostrarPagina('login')">Login</button>
-    <button id="btn-logout">Sair</button>
+    <button id="btnLogout">Sair</button>
   </nav>
 
   <!-- GALERIA -->
   <section id="galeria" class="pagina">
     <h2>Trabalhos</h2>
     <p class="section-subtitle">Faça login para visualizar as imagens</p>
-    <div id="lista-fotos" class="galeria-grid"></div>
+    <div id="listaFotos" class="galeria-grid"></div>
   </section>
 
-  <!-- LOGIN / CADASTRO -->
+  <!-- LOGIN -->
   <section id="login" class="pagina" style="display:none;">
-    <!-- (igual ao seu, não muda) -->
+    <h2>Login</h2>
+
+    <form id="login-form" class="form-login">
+
+      <input
+        type="email"
+        id="loginEmail"
+        placeholder="Email"
+        required
+      />
+
+      <!-- SENHA COM OLHO -->
+      <div class="campo-senha">
+        <input
+          type="password"
+          id="loginSenha"
+          placeholder="Digite sua senha"
+          required
+        />
+        <span id="toggleSenha" class="icone-olho"></span>
+      </div>
+
+      <!-- BOTÃO ENTRAR -->
+      <button type="submit">Entrar</button>
+
+      <!-- BOTÕES NO MESMO ESTILO -->
+      <button
+        type="button"
+        class="btn-secundario"
+        onclick="criarConta()"
+      >
+        Criar conta
+      </button>
+
+      <button
+        type="button"
+        class="btn-secundario"
+        onclick="mostrarPagina('recuperar')"
+      >
+        Esqueci a senha
+      </button>
+
+    </form>
+
+    <p id="loginErro" class="erro-text"></p>
   </section>
 
-  <!-- RECUPERAR -->
+  <!-- RECUPERAR SENHA -->
   <section id="recuperar" class="pagina" style="display:none;">
-    <!-- (igual ao seu, não muda) -->
+    <h2>Recuperar senha</h2>
+
+    <div class="card-login">
+
+      <input
+        type="email"
+        id="recuperarEmail"
+        placeholder="Digite seu email"
+        required
+      />
+
+      <button
+        class="btn-primary full-width"
+        onclick="enviarRecuperacao()"
+      >
+        Enviar email
+      </button>
+
+      <button
+        class="btn-secondary full-width"
+        onclick="mostrarPagina('login')"
+      >
+        Voltar
+      </button>
+
+    </div>
   </section>
 
 </div>

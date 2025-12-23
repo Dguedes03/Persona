@@ -139,3 +139,63 @@ body {
 #recuperar input:focus {
   border-color: #ff99af;
 }
+
+.form-login {
+  max-width: 420px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-login input {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.campo-senha {
+  position: relative;
+}
+
+.campo-senha input {
+  padding-right: 42px;
+}
+
+.icone-olho {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 0.5;
+  background: url("https://cdn-icons-png.flaticon.com/512/159/159604.png")
+    no-repeat center;
+  background-size: contain;
+}
+
+.icone-olho.ativo {
+  background-image: url("https://cdn-icons-png.flaticon.com/512/159/159605.png");
+}
+
+.form-login button {
+  height: 42px;
+  border-radius: 20px;
+  border: none;
+  background: #f7b6c2;
+  cursor: pointer;
+}
+
+.acoes-login {
+  display: flex;
+  gap: 10px;
+}
+
+.acoes-login button {
+  background: transparent;
+  border: 1px solid #ccc;
+}

@@ -1,79 +1,139 @@
 const API = "https://atelier-backend-ew43.onrender.com";
 
+// ==========================
+// ESTADO
+// ==========================
+let token = localStorage.getItem("token");
 
-let token = localStorage.getItem("token") || null;
-
+// ==========================
 // NAVEGAÇÃO
+// ==========================
 function mostrarPagina(id) {
-  document.querySelectorAll(".pagina").forEach(p => (p.style.display = "none"));
-  document.getElementById(id)?.style.display = "block";
+  document.querySelectorAll(".pagina").forEach(p => {
+    p.style.display = "none";
+  });
+
+  const pagina = document.getElementById(id);
+  if (pagina) pagina.style.display = "block";
 }
 
-// CONTAR VISITA (1x POR LOAD)
+// ==========================
+// LOAD
+// ==========================
 window.onload = () => {
   fetch(`${API}/stats/visit`, { method: "POST" });
   carregarFotos();
+  mostrarPagina("galeria");
 };
 
+// ==========================
 // LOGIN
-document.getElementById("login-form")?.addEventListener("submit", async e => {
-  e.preventDefault();
+// ==========================
+const loginForm = document.getElementById("login-form");
+const loginErro = document.getElementById("loginErro");
 
-  const email = loginEmail.value;
-  const password = loginSenha.value;
+if (loginForm) {
+  loginForm.addEventListener("submit", async e => {
+    e.preventDefault();
 
-  const res = await fetch(`${API}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginSenha").value;
+
+    loginErro.textContent = "";
+
+    const res = await fetch(`${API}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      loginErro.textContent = "Email ou senha inválidos";
+      return;
+    }
+
+    token = data.access_token;
+    localStorage.setItem("token", token);
+
+    mostrarPagina("galeria");
+    carregarFotos();
   });
+}
 
-  const data = await res.json();
+// ==========================
+// CRIAR CONTA (SEM cadastroErro)
+// ==========================
+async function criarConta() {
+  loginErro.style.color = "#c0392b";
+  loginErro.textContent = "";
 
-  if (!res.ok) {
-    loginErro.textContent = "Email ou senha inválidos";
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginSenha").value;
+
+  if (!email || !password) {
+    loginErro.textContent = "Digite email e senha para criar conta";
     return;
   }
-
-  //token correto (como o backend retorna)
-  token = data.access_token;
-  localStorage.setItem("token", token);
-
-  mostrarPagina("galeria");
-  carregarFotos();
-});
-
-// CADASTRO
-async function criarConta() {
-  loginErro.textContent = "";
 
   const res = await fetch(`${API}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      email: loginEmail.value,
-      password: loginSenha.value,
-      cpf: cadastroCPF.value,
-      telefone: cadastroTelefone.value
+      email,
+      password,
+      cpf: "00000000000",
+      telefone: "000000000"
     })
   });
 
   if (!res.ok) {
-    loginErro.textContent = "Erro ao cadastrar";
+    loginErro.textContent = "Erro ao criar conta";
     return;
   }
 
   loginErro.style.color = "green";
-  loginErro.textContent = "Conta criada! Faça login.";
+  loginErro.textContent = "Conta criada! Agora faça login.";
 }
 
+// ==========================
+// RECUPERAR SENHA
+// ==========================
+async function enviarRecuperacao() {
+  const email = document.getElementById("recuperarEmail").value;
 
-// FOTOS + CLIQUE IMAGEM
+  if (!email) {
+    alert("Digite seu email");
+    return;
+  }
+
+  const res = await fetch(`${API}/auth/recover`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+
+  if (!res.ok) {
+    alert("Erro ao enviar email");
+    return;
+  }
+
+  alert("Email de recuperação enviado!");
+  mostrarPagina("login");
+}
+
+// ==========================
+// FOTOS
+// ==========================
 async function carregarFotos() {
+  const lista = document.getElementById("listaFotos");
+  if (!lista) return;
+
   const res = await fetch(`${API}/photos`);
   const fotos = await res.json();
 
-  listaFotos.innerHTML = "";
+  lista.innerHTML = "";
 
   fotos.forEach(foto => {
     const img = document.createElement("img");
@@ -81,26 +141,35 @@ async function carregarFotos() {
 
     if (!token) img.classList.add("img-blur");
 
-    // clique na imagem
     img.onclick = () => {
       fetch(`${API}/stats/click-image`, { method: "POST" });
     };
 
-    listaFotos.appendChild(img);
+    lista.appendChild(img);
   });
 }
 
-
-// CLIQUE ORÇAMENTO (SE EXISTIR)
-document
-  .getElementById("btn-orcamento")
-  ?.addEventListener("click", () => {
-    fetch(`${API}/stats/click-orcamento`, { method: "POST" });
-  });
-
-
+// ==========================
 // LOGOUT
-btnLogout?.addEventListener("click", () => {
-  localStorage.clear();
-  location.reload();
-});
+// ==========================
+const btnLogout = document.getElementById("btnLogout");
+if (btnLogout) {
+  btnLogout.addEventListener("click", () => {
+    localStorage.clear();
+    location.reload();
+  });
+}
+
+// ==========================
+// OLHO DA SENHA
+// ==========================
+const toggleSenha = document.getElementById("toggleSenha");
+const loginSenha = document.getElementById("loginSenha");
+
+if (toggleSenha && loginSenha) {
+  toggleSenha.addEventListener("click", () => {
+    const ativo = loginSenha.type === "password";
+    loginSenha.type = ativo ? "text" : "password";
+    toggleSenha.classList.toggle("ativo", ativo);
+  });
+}
