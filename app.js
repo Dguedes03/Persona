@@ -20,10 +20,12 @@ function mostrarPagina(id) {
 // ==========================
 // LOAD
 // ==========================
-window.onload = () => {
+window.onload = async () => {
   fetch(`${API}/stats/visit`, { method: "POST" });
   carregarFotos();
   mostrarPagina("galeria");
+
+  await verificarUsuario();
 };
 
 // ==========================
@@ -58,13 +60,15 @@ if (loginForm) {
     token = data.access_token;
     localStorage.setItem("token", token);
 
+    await verificarUsuario();
+
     mostrarPagina("galeria");
     carregarFotos();
   });
 }
 
 // ==========================
-// CRIAR CONTA (CORRETO)
+// CRIAR CONTA
 // ==========================
 async function criarConta() {
   const msg = document.getElementById("cadastroMsg");
@@ -175,4 +179,42 @@ if (toggleSenha && loginSenha) {
     loginSenha.type = ativo ? "text" : "password";
     toggleSenha.classList.toggle("ativo", ativo);
   });
+}
+
+// ==========================
+// VERIFICA USUÁRIO / ADMIN
+// ==========================
+async function verificarUsuario() {
+  if (!token) return;
+
+  const res = await fetch(`${API}/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) return;
+
+  const me = await res.json();
+
+  if (me.role === "admin") {
+    ativarModoAdmin();
+  }
+}
+
+// ==========================
+// ATIVA MODO ADMIN NO SITE
+// ==========================
+function ativarModoAdmin() {
+  const nav = document.querySelector(".navbar");
+
+  if (!document.getElementById("btn-admin")) {
+    const btn = document.createElement("button");
+    btn.id = "btn-admin";
+    btn.textContent = "Painel Admin";
+    btn.onclick = () => {
+      window.location.href = "/admin.html";
+    };
+    nav.appendChild(btn);
+  }
 }
