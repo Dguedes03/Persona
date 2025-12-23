@@ -34,16 +34,10 @@
   <section id="login" class="pagina" style="display:none;">
     <h2>Login</h2>
 
-    <form id="login-form" class="form-login">
+    <form id="login-form" class="form-login card card-login">
 
-      <input
-        type="email"
-        id="loginEmail"
-        placeholder="Email"
-        required
-      />
+      <input type="email" id="loginEmail" placeholder="Email" required />
 
-      <!-- SENHA COM OLHO -->
       <div class="campo-senha">
         <input
           type="password"
@@ -54,37 +48,49 @@
         <span id="toggleSenha" class="icone-olho"></span>
       </div>
 
-      <!-- BOTÃO ENTRAR -->
-      <button type="submit">Entrar</button>
-
-      <!-- BOTÕES NO MESMO ESTILO -->
-      <button
-        type="button"
-        class="btn-secundario"
-        onclick="criarConta()"
-      >
-        Criar conta
-      </button>
-
-      <button
-        type="button"
-        class="btn-secundario"
-        onclick="mostrarPagina('recuperar')"
-      >
-        Esqueci a senha
-      </button>
-
+      <button type="submit" class="btn-primary full-width">Entrar</button>
     </form>
 
     <p id="loginErro" class="erro-text"></p>
+
+    <div class="acoes-login">
+      <button class="btn-secondary" onclick="mostrarPagina('cadastro')">
+        Criar conta
+      </button>
+      <button class="btn-secondary" onclick="mostrarPagina('recuperar')">
+        Esqueci a senha
+      </button>
+    </div>
   </section>
 
-  <!-- RECUPERAR SENHA -->
+  <!-- CADASTRO -->
+  <section id="cadastro" class="pagina" style="display:none;">
+    <h2>Criar conta</h2>
+
+    <div class="card card-login form-login">
+
+      <input type="email" id="cadastroEmail" placeholder="Email" required />
+      <input type="password" id="cadastroSenha" placeholder="Senha" required />
+      <input type="text" id="cadastroCPF" placeholder="CPF" required />
+      <input type="text" id="cadastroTelefone" placeholder="Telefone" required />
+
+      <button class="btn-primary full-width" onclick="criarConta()">
+        Criar conta
+      </button>
+
+      <p id="cadastroMsg" class="erro-text"></p>
+
+      <button class="btn-secondary" onclick="mostrarPagina('login')">
+        Voltar
+      </button>
+    </div>
+  </section>
+
+  <!-- RECUPERAR -->
   <section id="recuperar" class="pagina" style="display:none;">
     <h2>Recuperar senha</h2>
 
-    <div class="card-login">
-
+    <div class="card card-login">
       <input
         type="email"
         id="recuperarEmail"
@@ -92,20 +98,13 @@
         required
       />
 
-      <button
-        class="btn-primary full-width"
-        onclick="enviarRecuperacao()"
-      >
+      <button class="btn-primary full-width" onclick="enviarRecuperacao()">
         Enviar email
       </button>
 
-      <button
-        class="btn-secondary full-width"
-        onclick="mostrarPagina('login')"
-      >
+      <button class="btn-secondary" onclick="mostrarPagina('login')">
         Voltar
       </button>
-
     </div>
   </section>
 

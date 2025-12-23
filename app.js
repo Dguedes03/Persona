@@ -40,6 +40,7 @@ if (loginForm) {
     const password = document.getElementById("loginSenha").value;
 
     loginErro.textContent = "";
+    loginErro.style.color = "#c0392b";
 
     const res = await fetch(`${API}/auth/login`, {
       method: "POST",
@@ -63,38 +64,40 @@ if (loginForm) {
 }
 
 // ==========================
-// CRIAR CONTA (SEM cadastroErro)
+// CRIAR CONTA (CORRETO)
 // ==========================
 async function criarConta() {
-  loginErro.style.color = "#c0392b";
-  loginErro.textContent = "";
+  const msg = document.getElementById("cadastroMsg");
+  msg.textContent = "";
+  msg.style.color = "#c0392b";
 
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginSenha").value;
+  const email = document.getElementById("cadastroEmail").value;
+  const password = document.getElementById("cadastroSenha").value;
+  const cpf = document.getElementById("cadastroCPF").value;
+  const telefone = document.getElementById("cadastroTelefone").value;
 
-  if (!email || !password) {
-    loginErro.textContent = "Digite email e senha para criar conta";
+  if (!email || !password || !cpf || !telefone) {
+    msg.textContent = "Preencha todos os campos";
     return;
   }
 
   const res = await fetch(`${API}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email,
-      password,
-      cpf: "00000000000",
-      telefone: "000000000"
-    })
+    body: JSON.stringify({ email, password, cpf, telefone })
   });
 
   if (!res.ok) {
-    loginErro.textContent = "Erro ao criar conta";
+    msg.textContent = "Erro ao criar conta";
     return;
   }
 
-  loginErro.style.color = "green";
-  loginErro.textContent = "Conta criada! Agora faça login.";
+  msg.style.color = "green";
+  msg.textContent = "Conta criada com sucesso! Faça login.";
+
+  setTimeout(() => {
+    mostrarPagina("login");
+  }, 1500);
 }
 
 // ==========================
