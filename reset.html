@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redefinir senha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-container">
+  <h2>Redefinir senha</h2>
+
+  <div class="card card-login">
+    <input
+      type="password"
+      id="novaSenha"
+      placeholder="Nova senha"
+      required
+    />
+
+    <button class="btn-primary full-width" onclick="atualizarSenha()">
+      Atualizar senha
+    </button>
+
+    <p id="resetMsg" class="erro-text"></p>
+  </div>
+</div>
+
+<script src="reset.js"></script>
+</body>
+</html>
