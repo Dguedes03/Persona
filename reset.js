@@ -33,3 +33,6 @@ async function atualizarSenha() {
     window.location.href = "/Persona/";
   }, 1500);
 }
+
+// 👇 ESSENCIAL
+window.atualizarSenha = atualizarSenha;
