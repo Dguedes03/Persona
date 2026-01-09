@@ -193,14 +193,14 @@ async function verificarUsuario() {
     }
   });
 
-  if (!res.ok) return;
-
   const me = await res.json();
+  console.log("ME:", me); // 👈 ADICIONE ISSO
 
   if (me.role === "admin") {
     ativarModoAdmin();
   }
 }
+
 
 // ==========================
 // ATIVA MODO ADMIN NO SITE
