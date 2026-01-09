@@ -131,7 +131,7 @@ async function enviarRecuperacao() {
 }
 
 // ==========================
-// FOTOS
+// FOTOS (GALERIA COM CARD)
 // ==========================
 async function carregarFotos() {
   const lista = document.getElementById("listaFotos");
@@ -143,16 +143,24 @@ async function carregarFotos() {
   lista.innerHTML = "";
 
   fotos.forEach(foto => {
-    const img = document.createElement("img");
-    img.src = foto.url;
+    // título = primeira linha da descrição
+    const titulo =
+      foto.description?.split("\n")[0] || "Produto artesanal";
 
-    if (!token) img.classList.add("img-blur");
+    const card = document.createElement("div");
+    card.className = "produto-card";
 
-    img.onclick = () => {
+    card.innerHTML = `
+      <img src="${foto.url}">
+      <h4>${titulo}</h4>
+    `;
+
+    card.onclick = () => {
       fetch(`${API}/stats/click-image`, { method: "POST" });
+      window.location.href = `produto.html?id=${foto.id}`;
     };
 
-    lista.appendChild(img);
+    lista.appendChild(card);
   });
 }
 
@@ -194,13 +202,12 @@ async function verificarUsuario() {
   });
 
   const me = await res.json();
-  console.log("ME:", me); // 👈 ADICIONE ISSO
+  console.log("ME:", me);
 
   if (me.role === "admin") {
     ativarModoAdmin();
   }
 }
-
 
 // ==========================
 // ATIVA MODO ADMIN NO SITE
