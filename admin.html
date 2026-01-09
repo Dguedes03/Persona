@@ -1,40 +1,87 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Área Administrativa</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Área Administrativa | Atelier da Ana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="stylesheet" href="style.css">
+  <!-- CSS GLOBAL DO SITE -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- CSS DO ADMIN -->
+  <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
 
-<h2>Área da Administradora</h2>
+  <div class="admin-container">
 
-<section id="dashboard" class="pagina" style="display:none;">
-  <h3>Dashboard</h3>
+    <!-- HEADER -->
+    <header class="admin-header">
+      <h1>Área Administrativa</h1>
+      <p class="admin-subtitle">Atelier da Ana</p>
+    </header>
 
-  <p>Visitas: <span id="cont-visitas">0</span></p>
-  <p>Cliques imagens: <span id="cont-cliques-imagem">0</span></p>
-  <p>Orçamentos: <span id="cont-orcamento">0</span></p>
+    <!-- GRID PRINCIPAL -->
+    <section class="admin-grid">
 
-  <input type="file" id="imagem">
-  <button onclick="adicionarFoto()">Enviar Foto</button>
+      <!-- DASHBOARD -->
+      <div class="card">
+        <h3>📊 Dashboard</h3>
 
-  <table id="tabela-clientes">
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Telefone</th>
-        <th>CPF</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+        <div class="stats">
+          <div class="stat">
+            <span>Visitas</span>
+            <strong id="cont-visitas">0</strong>
+          </div>
 
-  <button id="btn-logout">Sair</button>
-</section>
+          <div class="stat">
+            <span>Cliques nas imagens</span>
+            <strong id="cont-cliques-imagem">0</strong>
+          </div>
 
-<script src="./admin.js"></script>
+          <div class="stat">
+            <span>Orçamentos</span>
+            <strong id="cont-orcamento">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD DE FOTOS -->
+      <div class="card">
+        <h3>🖼️ Upload de Fotos</h3>
+
+        <input type="file" id="imagem" />
+        <button onclick="adicionarFoto()">Enviar Foto</button>
+      </div>
+
+      <!-- CLIENTES -->
+      <div class="card full">
+        <h3>👥 Clientes</h3>
+
+        <table id="tabela-clientes">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Telefone</th>
+              <th>CPF</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- preenchido via JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="admin-footer">
+      <button id="btn-logout" class="btn-danger">Sair</button>
+    </footer>
+
+  </div>
+
+  <!-- JS DO ADMIN -->
+  <script src="admin.js"></script>
 </body>
 </html>
