@@ -34,3 +34,59 @@ button:hover {
   background: #c0392b;
   margin-top: 30px;
 }
+/* =========================
+   DARK MODE - ADMIN
+   ========================= */
+
+body.dark {
+  background: #121212;
+  color: #eaeaea;
+}
+
+body.dark .admin-container {
+  background: transparent;
+}
+
+body.dark .card {
+  background: #1e1e1e;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+body.dark .card h3 {
+  color: #ffffff;
+}
+
+body.dark .stat {
+  background: #2a2a2a;
+}
+
+body.dark table {
+  color: #eaeaea;
+}
+
+body.dark table thead {
+  background: #2f2f2f;
+}
+
+body.dark table tbody tr:nth-child(even) {
+  background: #1b1b1b;
+}
+
+body.dark table tbody tr:hover {
+  background: #333;
+}
+
+body.dark button {
+  background: #ff7aa2;
+}
+
+body.dark .btn-danger {
+  background: #e74c3c;
+}
+
+body.dark input,
+body.dark textarea {
+  background: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444;
+}
