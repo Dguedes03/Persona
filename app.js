@@ -213,7 +213,7 @@ function ativarModoAdmin() {
     btn.id = "btn-admin";
     btn.textContent = "Painel Admin";
     btn.onclick = () => {
-      window.location.href = "/admin.html";
+      window.location.href = "/Persona/admin.html";
     };
     nav.appendChild(btn);
   }
