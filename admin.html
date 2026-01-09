@@ -5,11 +5,14 @@
   <title>Área Administrativa | Atelier da Ana</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- CSS GLOBAL DO SITE -->
+  <!-- CSS GLOBAL -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- CSS DO ADMIN -->
+  <!-- CSS ADMIN -->
   <link rel="stylesheet" href="admin.css" />
+
+  <!-- CHART.JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -17,11 +20,15 @@
 
     <!-- HEADER -->
     <header class="admin-header">
-      <h1>Área Administrativa</h1>
-      <p class="admin-subtitle">Atelier da Ana</p>
+      <div>
+        <h1>Área Administrativa</h1>
+        <p class="admin-subtitle">Atelier da Ana</p>
+      </div>
+
+      <button id="toggle-dark" title="Modo escuro">🌙</button>
     </header>
 
-    <!-- GRID PRINCIPAL -->
+    <!-- GRID -->
     <section class="admin-grid">
 
       <!-- DASHBOARD -->
@@ -35,7 +42,7 @@
           </div>
 
           <div class="stat">
-            <span>Cliques nas imagens</span>
+            <span>Cliques</span>
             <strong id="cont-cliques-imagem">0</strong>
           </div>
 
@@ -44,14 +51,22 @@
             <strong id="cont-orcamento">0</strong>
           </div>
         </div>
+
+        <canvas id="grafico" style="margin-top:20px;"></canvas>
       </div>
 
-      <!-- UPLOAD DE FOTOS -->
+      <!-- UPLOAD -->
       <div class="card">
         <h3>🖼️ Upload de Fotos</h3>
 
         <input type="file" id="imagem" />
         <button onclick="adicionarFoto()">Enviar Foto</button>
+      </div>
+
+      <!-- FOTOS -->
+      <div class="card full">
+        <h3>🗂️ Fotos</h3>
+        <div id="lista-fotos" class="foto-grid"></div>
       </div>
 
       <!-- CLIENTES -->
@@ -66,9 +81,7 @@
               <th>CPF</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- preenchido via JS -->
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
 
@@ -81,7 +94,7 @@
 
   </div>
 
-  <!-- JS DO ADMIN -->
+  <!-- JS ADMIN -->
   <script src="admin.js"></script>
 </body>
 </html>
