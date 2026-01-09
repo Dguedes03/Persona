@@ -1,16 +1,12 @@
 const API = "https://atelier-backend-ew43.onrender.com";
 const token = localStorage.getItem("token");
 
-// ==========================
-// PROTEÇÃO BÁSICA
-// ==========================
+// PROTEÇÃO
 if (!token) {
   location.href = "/Persona/";
 }
 
-// ==========================
 // FETCH COM TOKEN
-// ==========================
 async function fetchAdmin(url, options = {}) {
   const res = await fetch(`${API}${url}`, {
     ...options,
@@ -19,11 +15,6 @@ async function fetchAdmin(url, options = {}) {
       Authorization: `Bearer ${token}`
     }
   });
-
-    if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    console.error("ADMIN API ERROR:", url, res.status, err);
-  }
 
   if (res.status === 401 || res.status === 403) {
     localStorage.clear();
@@ -34,40 +25,31 @@ async function fetchAdmin(url, options = {}) {
   return res;
 }
 
-// ==========================
-// VERIFICA SE É ADMIN
-// ==========================
+// VERIFICA ADMIN
 async function verificarAdmin() {
   const res = await fetchAdmin("/me");
   const me = await res.json();
+
+  console.log("ME:", me);
 
   if (me.role !== "admin") {
     alert("Acesso restrito");
     localStorage.clear();
     location.href = "/Persona/";
-    return;
   }
-
-  document.getElementById("dashboard").style.display = "block";
 }
 
-// ==========================
 // DASHBOARD
-// ==========================
 async function carregarDashboard() {
   const res = await fetchAdmin("/admin/stats");
   const data = await res.json();
 
   document.getElementById("cont-visitas").textContent = data.visitas;
-  document.getElementById("cont-cliques-imagem").textContent =
-    data.cliques_imagem;
-  document.getElementById("cont-orcamento").textContent =
-    data.cliques_orcamento;
+  document.getElementById("cont-cliques-imagem").textContent = data.cliques_imagem;
+  document.getElementById("cont-orcamento").textContent = data.cliques_orcamento;
 }
 
-// ==========================
 // CLIENTES
-// ==========================
 async function carregarClientes() {
   const res = await fetchAdmin("/admin/clients");
   const clientes = await res.json();
@@ -86,13 +68,9 @@ async function carregarClientes() {
   });
 }
 
-// ==========================
-// UPLOAD FOTO
-// ==========================
+// UPLOAD
 async function adicionarFoto() {
-  const imagemInput = document.getElementById("imagem");
-  const file = imagemInput.files[0];
-
+  const file = document.getElementById("imagem").files[0];
   if (!file) {
     alert("Selecione uma imagem");
     return;
@@ -109,17 +87,13 @@ async function adicionarFoto() {
   alert("Foto enviada com sucesso");
 }
 
-// ==========================
 // LOGOUT
-// ==========================
 document.getElementById("btn-logout").onclick = () => {
   localStorage.clear();
   location.href = "/Persona/";
 };
 
-// ==========================
 // INIT
-// ==========================
 (async () => {
   await verificarAdmin();
   await carregarDashboard();
