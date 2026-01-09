@@ -5,7 +5,7 @@ const token = localStorage.getItem("token");
 // PROTEÇÃO BÁSICA
 // ==========================
 if (!token) {
-  location.href = "/";
+  location.href = "/Persona/";
 }
 
 // ==========================
@@ -20,9 +20,14 @@ async function fetchAdmin(url, options = {}) {
     }
   });
 
+    if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    console.error("ADMIN API ERROR:", url, res.status, err);
+  }
+
   if (res.status === 401 || res.status === 403) {
     localStorage.clear();
-    location.href = "/";
+    location.href = "/Persona/";
     return;
   }
 
@@ -39,7 +44,7 @@ async function verificarAdmin() {
   if (me.role !== "admin") {
     alert("Acesso restrito");
     localStorage.clear();
-    location.href = "/";
+    location.href = "/Persona/";
   }
 }
 
@@ -106,7 +111,7 @@ async function adicionarFoto() {
 // ==========================
 document.getElementById("btn-logout").onclick = () => {
   localStorage.clear();
-  location.href = "/";
+  location.href = "/Persona/";
 };
 
 // ==========================
