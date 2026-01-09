@@ -45,7 +45,10 @@ async function verificarAdmin() {
     alert("Acesso restrito");
     localStorage.clear();
     location.href = "/Persona/";
+    return;
   }
+
+  document.getElementById("dashboard").style.display = "block";
 }
 
 // ==========================
