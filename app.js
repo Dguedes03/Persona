@@ -131,7 +131,7 @@ async function enviarRecuperacao() {
 }
 
 // ==========================
-// FOTOS (GALERIA COM CARD)
+// FOTOS (GALERIA COM MODAL)
 // ==========================
 async function carregarFotos() {
   const lista = document.getElementById("listaFotos");
@@ -143,7 +143,6 @@ async function carregarFotos() {
   lista.innerHTML = "";
 
   fotos.forEach(foto => {
-    // título = primeira linha da descrição
     const titulo =
       foto.description?.split("\n")[0] || "Produto artesanal";
 
@@ -151,17 +150,47 @@ async function carregarFotos() {
     card.className = "produto-card";
 
     card.innerHTML = `
-      <img src="${foto.url}">
+      <img src="${foto.url}" alt="${titulo}">
       <h4>${titulo}</h4>
     `;
 
     card.onclick = () => {
       fetch(`${API}/stats/click-image`, { method: "POST" });
-      window.location.href = `produto.html?id=${foto.id}`;
+      abrirModalProduto(foto);
     };
 
     lista.appendChild(card);
   });
+}
+
+// ==========================
+// MODAL PRODUTO
+// ==========================
+function abrirModalProduto(foto) {
+  const linhas = foto.description
+    ? foto.description.split("\n")
+    : [];
+
+  const titulo = linhas[0] || "Produto artesanal";
+  const descricao = linhas.slice(1).join("\n");
+
+  document.getElementById("modal-img").src = foto.url;
+  document.getElementById("modal-titulo").textContent = titulo;
+  document.getElementById("modal-desc").textContent = descricao;
+
+  const whatsapp = "5599999999999"; // <-- COLOQUE O NÚMERO REAL AQUI
+  const mensagem = encodeURIComponent(
+    `Olá! Gostaria de um orçamento sobre:\n${titulo}`
+  );
+
+  document.getElementById("modal-whatsapp").href =
+    `https://wa.me/${whatsapp}?text=${mensagem}`;
+
+  document.getElementById("modal-produto").classList.remove("hidden");
+}
+
+function fecharModal() {
+  document.getElementById("modal-produto").classList.add("hidden");
 }
 
 // ==========================

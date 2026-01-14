@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>Atelier da Ana</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- CSS PRINCIPAL -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -16,7 +18,7 @@
     <div class="subtitle">Arte feita com carinho ✨</div>
   </header>
 
-  <!-- NAV -->
+  <!-- NAVBAR -->
   <nav class="navbar">
     <button onclick="mostrarPagina('galeria')">Galeria</button>
     <button onclick="mostrarPagina('login')">Login</button>
@@ -26,7 +28,10 @@
   <!-- GALERIA -->
   <section id="galeria" class="pagina">
     <h2>Trabalhos</h2>
-    <p class="section-subtitle">Faça login para visualizar as imagens</p>
+    <p class="section-subtitle">
+      Clique em um produto para ver mais detalhes
+    </p>
+
     <div id="listaFotos" class="galeria-grid"></div>
   </section>
 
@@ -36,7 +41,12 @@
 
     <form id="login-form" class="form-login card card-login">
 
-      <input type="email" id="loginEmail" placeholder="Email" required />
+      <input
+        type="email"
+        id="loginEmail"
+        placeholder="Email"
+        required
+      />
 
       <div class="campo-senha">
         <input
@@ -48,7 +58,9 @@
         <span id="toggleSenha" class="icone-olho"></span>
       </div>
 
-      <button type="submit" class="btn-primary full-width">Entrar</button>
+      <button type="submit" class="btn-primary full-width">
+        Entrar
+      </button>
     </form>
 
     <p id="loginErro" class="erro-text"></p>
@@ -68,7 +80,6 @@
     <h2>Criar conta</h2>
 
     <div class="card card-login form-login">
-
       <input type="email" id="cadastroEmail" placeholder="Email" required />
       <input type="password" id="cadastroSenha" placeholder="Senha" required />
       <input type="text" id="cadastroCPF" placeholder="CPF" required />
@@ -86,7 +97,7 @@
     </div>
   </section>
 
-  <!-- RECUPERAR -->
+  <!-- RECUPERAR SENHA -->
   <section id="recuperar" class="pagina" style="display:none;">
     <h2>Recuperar senha</h2>
 
@@ -110,6 +121,29 @@
 
 </div>
 
+<!-- MODAL DO PRODUTO -->
+<div id="modal-produto" class="modal hidden" onclick="fecharModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+
+    <button class="modal-close" onclick="fecharModal()">×</button>
+
+    <img id="modal-img" alt="Produto" />
+    <h2 id="modal-titulo"></h2>
+    <p id="modal-desc"></p>
+
+    <a
+      id="modal-whatsapp"
+      class="btn-primary full-width"
+      target="_blank"
+    >
+      Fazer orçamento
+    </a>
+
+  </div>
+</div>
+
+<!-- JS -->
 <script src="./app.js"></script>
+
 </body>
 </html>
