@@ -4,6 +4,8 @@ const API = "https://atelier-backend-ew43.onrender.com";
 // ESTADO
 // ==========================
 let token = localStorage.getItem("token");
+let produtoAtual = null;
+let indiceImagem = 0;
 
 // ==========================
 // NAVEGAÇÃO
@@ -22,9 +24,8 @@ function mostrarPagina(id) {
 // ==========================
 window.onload = async () => {
   fetch(`${API}/stats/visit`, { method: "POST" });
-  carregarFotos();
+  await carregarFotos();
   mostrarPagina("galeria");
-
   await verificarUsuario();
 };
 
@@ -38,11 +39,8 @@ if (loginForm) {
   loginForm.addEventListener("submit", async e => {
     e.preventDefault();
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginSenha").value;
-
-    loginErro.textContent = "";
-    loginErro.style.color = "#c0392b";
+    const email = loginForm.loginEmail.value;
+    const password = loginForm.loginSenha.value;
 
     const res = await fetch(`${API}/auth/login`, {
       method: "POST",
@@ -61,77 +59,13 @@ if (loginForm) {
     localStorage.setItem("token", token);
 
     await verificarUsuario();
-
     mostrarPagina("galeria");
     carregarFotos();
   });
 }
 
 // ==========================
-// CRIAR CONTA
-// ==========================
-async function criarConta() {
-  const msg = document.getElementById("cadastroMsg");
-  msg.textContent = "";
-  msg.style.color = "#c0392b";
-
-  const email = document.getElementById("cadastroEmail").value;
-  const password = document.getElementById("cadastroSenha").value;
-  const cpf = document.getElementById("cadastroCPF").value;
-  const telefone = document.getElementById("cadastroTelefone").value;
-
-  if (!email || !password || !cpf || !telefone) {
-    msg.textContent = "Preencha todos os campos";
-    return;
-  }
-
-  const res = await fetch(`${API}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password, cpf, telefone })
-  });
-
-  if (!res.ok) {
-    msg.textContent = "Erro ao criar conta";
-    return;
-  }
-
-  msg.style.color = "green";
-  msg.textContent = "Conta criada com sucesso! Faça login.";
-
-  setTimeout(() => {
-    mostrarPagina("login");
-  }, 1500);
-}
-
-// ==========================
-// RECUPERAR SENHA
-// ==========================
-async function enviarRecuperacao() {
-  const email = document.getElementById("recuperarEmail").value;
-
-  if (!email) {
-    alert("Digite seu email");
-    return;
-  }
-
-  const res = await fetch(`${API}/auth/recover`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email })
-  });
-
-  if (!res.ok) {
-    alert("Erro ao enviar email");
-    return;
-  }
-
-  alert("Email de recuperação enviado!");
-  mostrarPagina("login");
-}
-
-// ==========================
-// FOTOS (GALERIA COM MODAL)
+// GALERIA (AGRUPADA)
 // ==========================
 async function carregarFotos() {
   const lista = document.getElementById("listaFotos");
@@ -142,51 +76,89 @@ async function carregarFotos() {
 
   lista.innerHTML = "";
 
-  fotos.forEach(foto => {
-    const titulo =
-      foto.description?.split("\n")[0] || "Produto artesanal";
+  const produtos = agruparProdutos(fotos);
 
+  produtos.forEach(produto => {
     const card = document.createElement("div");
     card.className = "produto-card";
 
     card.innerHTML = `
-      <img src="${foto.url}" alt="${titulo}">
-      <h4>${titulo}</h4>
+      <img src="${produto.imagens[0]}" />
+      <h4>${produto.titulo}</h4>
     `;
 
-    card.onclick = () => {
-      fetch(`${API}/stats/click-image`, { method: "POST" });
-      abrirModalProduto(foto);
-    };
-
+    card.onclick = () => abrirModalProduto(produto);
     lista.appendChild(card);
   });
 }
 
 // ==========================
-// MODAL PRODUTO
+// AGRUPAR POR PRODUTO
 // ==========================
-function abrirModalProduto(foto) {
-  const linhas = foto.description
-    ? foto.description.split("\n")
-    : [];
+function agruparProdutos(fotos) {
+  const map = {};
 
-  const titulo = linhas[0] || "Produto artesanal";
-  const descricao = linhas.slice(1).join("\n");
+  fotos.forEach(f => {
+    const linhas = f.description?.split("\n") || [];
+    const titulo = linhas[0] || "Produto artesanal";
+    const descricao = linhas.slice(1).join("\n");
 
-  document.getElementById("modal-img").src = foto.url;
-  document.getElementById("modal-titulo").textContent = titulo;
-  document.getElementById("modal-desc").textContent = descricao;
+    if (!map[titulo]) {
+      map[titulo] = {
+        titulo,
+        descricao,
+        imagens: []
+      };
+    }
 
-  const whatsapp = "5516974054147"; // <-- COLOQUE O NÚMERO REAL AQUI 
-  const mensagem = encodeURIComponent(
-    `Olá! Gostaria de um orçamento sobre:\n${titulo}`
+    map[titulo].imagens.push(f.url);
+  });
+
+  return Object.values(map);
+}
+
+// ==========================
+// MODAL COM SWIPE
+// ==========================
+function abrirModalProduto(produto) {
+  produtoAtual = produto;
+  indiceImagem = 0;
+
+  atualizarModal();
+
+  document.getElementById("modal-produto").classList.remove("hidden");
+}
+
+function atualizarModal() {
+  document.getElementById("modal-img").src =
+    produtoAtual.imagens[indiceImagem];
+
+  document.getElementById("modal-titulo").textContent =
+    produtoAtual.titulo;
+
+  document.getElementById("modal-desc").textContent =
+    produtoAtual.descricao;
+
+  const whatsapp = "5516974054147"; // troque se quiser
+  const msg = encodeURIComponent(
+    `Olá! Gostaria de um orçamento sobre:\n${produtoAtual.titulo}`
   );
 
   document.getElementById("modal-whatsapp").href =
-    `https://wa.me/${whatsapp}?text=${mensagem}`;
+    `https://wa.me/${whatsapp}?text=${msg}`;
+}
 
-  document.getElementById("modal-produto").classList.remove("hidden");
+function proximaImagem() {
+  indiceImagem =
+    (indiceImagem + 1) % produtoAtual.imagens.length;
+  atualizarModal();
+}
+
+function imagemAnterior() {
+  indiceImagem =
+    (indiceImagem - 1 + produtoAtual.imagens.length) %
+    produtoAtual.imagens.length;
+  atualizarModal();
 }
 
 function fecharModal() {
@@ -196,51 +168,26 @@ function fecharModal() {
 // ==========================
 // LOGOUT
 // ==========================
-const btnLogout = document.getElementById("btnLogout");
-if (btnLogout) {
-  btnLogout.addEventListener("click", () => {
-    localStorage.clear();
-    location.reload();
-  });
-}
+document.getElementById("btnLogout")?.addEventListener("click", () => {
+  localStorage.clear();
+  location.reload();
+});
 
 // ==========================
-// OLHO DA SENHA
-// ==========================
-const toggleSenha = document.getElementById("toggleSenha");
-const loginSenha = document.getElementById("loginSenha");
-
-if (toggleSenha && loginSenha) {
-  toggleSenha.addEventListener("click", () => {
-    const ativo = loginSenha.type === "password";
-    loginSenha.type = ativo ? "text" : "password";
-    toggleSenha.classList.toggle("ativo", ativo);
-  });
-}
-
-// ==========================
-// VERIFICA USUÁRIO / ADMIN
+// VERIFICA ADMIN
 // ==========================
 async function verificarUsuario() {
   if (!token) return;
 
   const res = await fetch(`${API}/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const me = await res.json();
-  console.log("ME:", me);
 
-  if (me.role === "admin") {
-    ativarModoAdmin();
-  }
+  if (me.role === "admin") ativarModoAdmin();
 }
 
-// ==========================
-// ATIVA MODO ADMIN NO SITE
-// ==========================
 function ativarModoAdmin() {
   const nav = document.querySelector(".navbar");
 
@@ -248,9 +195,8 @@ function ativarModoAdmin() {
     const btn = document.createElement("button");
     btn.id = "btn-admin";
     btn.textContent = "Painel Admin";
-    btn.onclick = () => {
-      window.location.href = "/Persona/admin.html";
-    };
+    btn.onclick = () =>
+      (window.location.href = "/Persona/admin.html");
     nav.appendChild(btn);
   }
 }

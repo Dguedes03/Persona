@@ -121,13 +121,35 @@
 
 </div>
 
-<!-- MODAL DO PRODUTO -->
+<!-- ================= MODAL PRODUTO (SWIPE) ================= -->
+
 <div id="modal-produto" class="modal hidden" onclick="fecharModal()">
   <div class="modal-content" onclick="event.stopPropagation()">
 
     <button class="modal-close" onclick="fecharModal()">×</button>
 
-    <img id="modal-img" alt="Produto" />
+    <div class="modal-imagem-wrapper">
+
+      <button
+        class="nav-imagem prev"
+        onclick="imagemAnterior()"
+        aria-label="Imagem anterior"
+      >
+        ‹
+      </button>
+
+      <img id="modal-img" alt="Produto" />
+
+      <button
+        class="nav-imagem next"
+        onclick="proximaImagem()"
+        aria-label="Próxima imagem"
+      >
+        ›
+      </button>
+
+    </div>
+
     <h2 id="modal-titulo"></h2>
     <p id="modal-desc"></p>
 

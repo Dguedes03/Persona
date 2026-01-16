@@ -173,34 +173,36 @@ function previewImagem(event) {
 // UPLOAD (TÍTULO + FOTO + DESCRIÇÃO)
 // ==========================
 async function adicionarFoto() {
-  const file = document.getElementById("imagem").files[0];
+  const files = document.getElementById("imagem").files;
   const title = document.getElementById("titulo").value;
   const description = document.getElementById("descricao").value;
 
-  if (!file || !title || !description) {
-    alert("Preencha título, foto e descrição");
+  if (!files.length || !title || !description) {
+    alert("Preencha título, descrição e selecione as imagens");
     return;
   }
 
-  const form = new FormData();
-  form.append("file", file);
-  form.append("title", title);
-  form.append("description", description);
+  for (const file of files) {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("title", title);
+    form.append("description", description);
 
-  await fetchAdmin("/photos", {
-    method: "POST",
-    body: form
-  });
+    await fetchAdmin("/photos", {
+      method: "POST",
+      body: form
+    });
+  }
 
-  alert("Produto cadastrado com sucesso!");
+  alert("Produto cadastrado com múltiplas fotos!");
 
   document.getElementById("imagem").value = "";
   document.getElementById("titulo").value = "";
   document.getElementById("descricao").value = "";
-  document.getElementById("preview").style.display = "none";
 
   carregarFotosAdmin();
 }
+
 
 // ==========================
 // DARK MODE
