@@ -6,6 +6,7 @@ const API = "https://atelier-backend-ew43.onrender.com";
 let token = localStorage.getItem("token");
 let produtoAtual = null;
 let indiceImagem = 0;
+let startX = 0;
 
 // ==========================
 // NAVEGAÇÃO
@@ -15,8 +16,7 @@ function mostrarPagina(id) {
     p.style.display = "none";
   });
 
-  const pagina = document.getElementById(id);
-  if (pagina) pagina.style.display = "block";
+  document.getElementById(id)?.style.setProperty("display", "block");
 }
 
 // ==========================
@@ -24,7 +24,7 @@ function mostrarPagina(id) {
 // ==========================
 window.onload = async () => {
   fetch(`${API}/stats/visit`, { method: "POST" });
-  await carregarFotos();
+  await carregarProdutos();
   mostrarPagina("galeria");
   await verificarUsuario();
 };
@@ -35,56 +35,55 @@ window.onload = async () => {
 const loginForm = document.getElementById("login-form");
 const loginErro = document.getElementById("loginErro");
 
-if (loginForm) {
-  loginForm.addEventListener("submit", async e => {
-    e.preventDefault();
+loginForm?.addEventListener("submit", async e => {
+  e.preventDefault();
 
-    const email = loginForm.loginEmail.value;
-    const password = loginForm.loginSenha.value;
+  const email = loginForm.loginEmail.value;
+  const password = loginForm.loginSenha.value;
 
-    const res = await fetch(`${API}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      loginErro.textContent = "Email ou senha inválidos";
-      return;
-    }
-
-    token = data.access_token;
-    localStorage.setItem("token", token);
-
-    await verificarUsuario();
-    mostrarPagina("galeria");
-    carregarFotos();
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
   });
-}
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    loginErro.textContent = "Email ou senha inválidos";
+    return;
+  }
+
+  token = data.access_token;
+  localStorage.setItem("token", token);
+
+  await verificarUsuario();
+  mostrarPagina("galeria");
+  carregarProdutos();
+});
 
 // ==========================
-// GALERIA (AGRUPADA)
+// GALERIA (PRODUTOS)
 // ==========================
-async function carregarFotos() {
+async function carregarProdutos() {
   const lista = document.getElementById("listaFotos");
   if (!lista) return;
 
-  const res = await fetch(`${API}/photos`);
-  const fotos = await res.json();
+  const res = await fetch(`${API}/products`);
+  const produtos = await res.json();
 
   lista.innerHTML = "";
 
-  const produtos = agruparProdutos(fotos);
-
   produtos.forEach(produto => {
+    const primeiraImagem =
+      produto.product_images?.[0]?.url || "";
+
     const card = document.createElement("div");
     card.className = "produto-card";
 
     card.innerHTML = `
-      <img src="${produto.imagens[0]}" />
-      <h4>${produto.titulo}</h4>
+      <img src="${primeiraImagem}" />
+      <h4>${produto.title}</h4>
     `;
 
     card.onclick = () => abrirModalProduto(produto);
@@ -93,32 +92,7 @@ async function carregarFotos() {
 }
 
 // ==========================
-// AGRUPAR POR PRODUTO
-// ==========================
-function agruparProdutos(fotos) {
-  const map = {};
-
-  fotos.forEach(f => {
-    const linhas = f.description?.split("\n") || [];
-    const titulo = linhas[0] || "Produto artesanal";
-    const descricao = linhas.slice(1).join("\n");
-
-    if (!map[titulo]) {
-      map[titulo] = {
-        titulo,
-        descricao,
-        imagens: []
-      };
-    }
-
-    map[titulo].imagens.push(f.url);
-  });
-
-  return Object.values(map);
-}
-
-// ==========================
-// MODAL COM SWIPE
+// MODAL + SWIPE
 // ==========================
 function abrirModalProduto(produto) {
   produtoAtual = produto;
@@ -126,22 +100,39 @@ function abrirModalProduto(produto) {
 
   atualizarModal();
 
-  document.getElementById("modal-produto").classList.remove("hidden");
+  const modal = document.getElementById("modal-produto");
+  modal.classList.remove("hidden");
+
+  const img = document.getElementById("modal-img");
+
+  img.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+  });
+
+  img.addEventListener("touchend", e => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = endX - startX;
+
+    if (diff > 50) imagemAnterior();
+    if (diff < -50) proximaImagem();
+  });
 }
 
 function atualizarModal() {
+  const imagens = produtoAtual.product_images;
+
   document.getElementById("modal-img").src =
-    produtoAtual.imagens[indiceImagem];
+    imagens[indiceImagem].url;
 
   document.getElementById("modal-titulo").textContent =
-    produtoAtual.titulo;
+    produtoAtual.title;
 
   document.getElementById("modal-desc").textContent =
-    produtoAtual.descricao;
+    produtoAtual.description;
 
-  const whatsapp = "5516974054147"; // troque se quiser
+  const whatsapp = "5516974054147";
   const msg = encodeURIComponent(
-    `Olá! Gostaria de um orçamento sobre:\n${produtoAtual.titulo}`
+    `Olá! Gostaria de um orçamento sobre:\n${produtoAtual.title}`
   );
 
   document.getElementById("modal-whatsapp").href =
@@ -150,14 +141,14 @@ function atualizarModal() {
 
 function proximaImagem() {
   indiceImagem =
-    (indiceImagem + 1) % produtoAtual.imagens.length;
+    (indiceImagem + 1) % produtoAtual.product_images.length;
   atualizarModal();
 }
 
 function imagemAnterior() {
   indiceImagem =
-    (indiceImagem - 1 + produtoAtual.imagens.length) %
-    produtoAtual.imagens.length;
+    (indiceImagem - 1 + produtoAtual.product_images.length) %
+    produtoAtual.product_images.length;
   atualizarModal();
 }
 

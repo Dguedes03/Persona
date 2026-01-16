@@ -66,12 +66,11 @@
         />
 
         <input
-        type="file"
-        id="imagem"
-        accept="image/*"
-        multiple
+          type="file"
+          id="imagem"
+          accept="image/*"
+          multiple
         />
-
 
         <textarea
           id="descricao"
@@ -80,7 +79,11 @@
         ></textarea>
 
         <!-- PREVIEW -->
-        <div id="preview" class="produto-card" style="margin-top:15px; display:none;">
+        <div
+          id="preview"
+          class="produto-card"
+          style="margin-top:15px; display:none;"
+        >
           <img id="preview-img" />
           <h4 id="preview-title"></h4>
         </div>
@@ -88,7 +91,7 @@
         <button onclick="adicionarFoto()">Cadastrar Produto</button>
       </div>
 
-      <!-- FOTOS CADASTRADAS -->
+      <!-- PRODUTOS CADASTRADOS -->
       <div class="card full">
         <h3>🗂️ Produtos Cadastrados</h3>
         <div id="lista-fotos" class="foto-grid"></div>
