@@ -178,7 +178,7 @@ function abrirModalProduto(foto) {
   document.getElementById("modal-titulo").textContent = titulo;
   document.getElementById("modal-desc").textContent = descricao;
 
-  const whatsapp = "5516974054147"; // <-- COLOQUE O NÚMERO REAL AQUI
+  const whatsapp = "5516974054147"; // <-- COLOQUE O NÚMERO REAL AQUI 
   const mensagem = encodeURIComponent(
     `Olá! Gostaria de um orçamento sobre:\n${titulo}`
   );

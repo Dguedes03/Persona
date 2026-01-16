@@ -55,15 +55,16 @@ async function carregarDashboard() {
   const data = await res.json();
 
   document.getElementById("cont-visitas").textContent = data.visitas;
-  document.getElementById("cont-cliques-imagem").textContent = data.cliques_imagem;
-  document.getElementById("cont-orcamento").textContent = data.cliques_orcamento;
+  document.getElementById("cont-cliques-imagem").textContent =
+    data.cliques_imagem;
+  document.getElementById("cont-orcamento").textContent =
+    data.cliques_orcamento;
 
   criarGrafico(data);
 }
 
 function criarGrafico(data) {
   const ctx = document.getElementById("grafico");
-
   if (!ctx) return;
 
   if (grafico) grafico.destroy();
@@ -83,9 +84,7 @@ function criarGrafico(data) {
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: false }
-      }
+      plugins: { legend: { display: false } }
     }
   });
 }
@@ -112,7 +111,7 @@ async function carregarClientes() {
 }
 
 // ==========================
-// FOTOS (LISTAR / EXCLUIR)
+// FOTOS (LISTAR / DESCRIÇÃO / EXCLUIR)
 // ==========================
 async function carregarFotosAdmin() {
   const res = await fetch(`${API}/photos`);
@@ -126,15 +125,33 @@ async function carregarFotosAdmin() {
   fotos.forEach(f => {
     container.innerHTML += `
       <div class="foto-item">
-        <img src="${f.url}">
-        <button onclick="excluirFoto('${f.id}')">✕</button>
+        <img src="${f.url}" />
+
+        <textarea
+          placeholder="Descrição do produto (1ª linha será o título)"
+          onblur="salvarDescricao('${f.id}', this.value)"
+        >${f.description || ""}</textarea>
+
+        <button class="btn-danger" onclick="excluirFoto('${f.id}')">
+          Excluir
+        </button>
       </div>
     `;
   });
 }
 
+async function salvarDescricao(id, description) {
+  await fetchAdmin(`/photos/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ description })
+  });
+}
+
 async function excluirFoto(id) {
-  if (!confirm("Excluir esta foto?")) return;
+  if (!confirm("Excluir este produto?")) return;
 
   await fetchAdmin(`/photos/${id}`, {
     method: "DELETE"
