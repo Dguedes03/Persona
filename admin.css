@@ -121,10 +121,60 @@ button:hover {
   background: #c0392b;
 }
 
-/* ================= UPLOAD ================= */
+/* ================= INPUTS ================= */
 
-.card input[type="file"] {
-  margin-top: 10px;
+.card input,
+.card textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.card textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.card input:focus,
+.card textarea:focus {
+  border-color: #ff7aa2;
+  outline: none;
+}
+
+/* ================= FILE UPLOAD CUSTOM ================= */
+
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-upload input[type="file"] {
+  display: none;
+}
+
+.file-btn {
+  background: #ff7aa2;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.file-btn:hover {
+  opacity: 0.9;
+}
+
+.file-name {
+  font-size: 13px;
+  color: #666;
+  word-break: break-word;
 }
 
 /* ================= FOTOS / PRODUTOS ================= */
@@ -150,21 +200,6 @@ button:hover {
   height: 180px;
   object-fit: cover;
   border-radius: 12px;
-}
-
-.foto-item textarea {
-  resize: vertical;
-  min-height: 80px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  padding: 8px;
-  font-size: 14px;
-  font-family: inherit;
-}
-
-.foto-item textarea:focus {
-  border-color: #ff7aa2;
-  outline: none;
 }
 
 /* ================= CLIENTES ================= */
@@ -215,27 +250,15 @@ body.dark .stat {
   background: #2a2a2a;
 }
 
-body.dark table {
-  color: #eaeaea;
-}
-
-body.dark table thead {
-  background: #2f2f2f;
-}
-
-body.dark table tbody tr:nth-child(even) {
-  background: #1b1b1b;
-}
-
-body.dark table tbody tr:hover {
-  background: #333;
-}
-
 body.dark textarea,
 body.dark input {
   background: #2a2a2a;
   color: #ffffff;
   border: 1px solid #444;
+}
+
+body.dark .file-name {
+  color: #ccc;
 }
 
 body.dark button {
