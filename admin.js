@@ -101,7 +101,6 @@ async function carregarClientes() {
   if (!res) return;
 
   const clientes = await res.json();
-
   const tbody = document.querySelector("#tabela-clientes tbody");
   if (!tbody) return;
 
@@ -126,7 +125,6 @@ async function carregarProdutosAdmin() {
   if (!res) return;
 
   const produtos = await res.json();
-
   const container = document.getElementById("lista-fotos");
   if (!container) return;
 
@@ -135,7 +133,7 @@ async function carregarProdutosAdmin() {
   produtos.forEach(p => {
     container.innerHTML += `
       <div class="foto-item">
-        <img src="${p.product_images[0]?.url || ""}" />
+        <img src="${p.product_images?.[0]?.url || ""}" />
         <strong>${p.title}</strong>
         <small>${p.product_images.length} imagem(ns)</small>
         <button class="btn-danger" onclick="excluirProduto('${p.id}')">
@@ -149,9 +147,14 @@ async function carregarProdutosAdmin() {
 async function excluirProduto(id) {
   if (!confirm("Excluir este produto e todas as imagens?")) return;
 
-  await fetchAdmin(`/products/${id}`, {
+  const res = await fetchAdmin(`/products/${id}`, {
     method: "DELETE"
   });
+
+  if (!res || !res.ok) {
+    alert("Erro ao excluir produto");
+    return;
+  }
 
   carregarProdutosAdmin();
 }
@@ -191,6 +194,7 @@ async function adicionarFoto() {
   form.append("title", title);
   form.append("description", description);
 
+  // 🔥 campo correto para o backend
   for (const file of files) {
     form.append("files", file);
   }
