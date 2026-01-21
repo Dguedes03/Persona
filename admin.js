@@ -37,7 +37,6 @@ async function verificarAdmin() {
   if (!res) return;
 
   const me = await res.json();
-  console.log("ME:", me);
 
   if (me.role !== "admin") {
     alert("Acesso restrito");
@@ -76,14 +75,16 @@ function criarGrafico(data) {
     type: "bar",
     data: {
       labels: ["Visitas", "Cliques", "Orçamentos"],
-      datasets: [{
-        data: [
-          data.visitas,
-          data.cliques_imagem,
-          data.cliques_orcamento
-        ],
-        backgroundColor: ["#ff7aa2", "#f1c40f", "#3498db"]
-      }]
+      datasets: [
+        {
+          data: [
+            data.visitas,
+            data.cliques_imagem,
+            data.cliques_orcamento
+          ],
+          backgroundColor: ["#ff7aa2", "#f1c40f", "#3498db"]
+        }
+      ]
     },
     options: {
       responsive: true,
@@ -120,23 +121,24 @@ async function carregarClientes() {
 // ==========================
 // PRODUTOS (LISTAR / EXCLUIR)
 // ==========================
-async function carregarFotosAdmin() {
-  const res = await fetchAdmin("/photos");
+async function carregarProdutosAdmin() {
+  const res = await fetchAdmin("/products");
   if (!res) return;
 
-  const fotos = await res.json();
+  const produtos = await res.json();
 
   const container = document.getElementById("lista-fotos");
   if (!container) return;
 
   container.innerHTML = "";
 
-  fotos.forEach(f => {
+  produtos.forEach(p => {
     container.innerHTML += `
       <div class="foto-item">
-        <img src="${f.url}" />
-        <strong>${f.title}</strong>
-        <button class="btn-danger" onclick="excluirFoto('${f.id}')">
+        <img src="${p.product_images[0]?.url || ""}" />
+        <strong>${p.title}</strong>
+        <small>${p.product_images.length} imagem(ns)</small>
+        <button class="btn-danger" onclick="excluirProduto('${p.id}')">
           Excluir
         </button>
       </div>
@@ -144,21 +146,24 @@ async function carregarFotosAdmin() {
   });
 }
 
-async function excluirFoto(id) {
-  if (!confirm("Excluir este produto?")) return;
+async function excluirProduto(id) {
+  if (!confirm("Excluir este produto e todas as imagens?")) return;
 
-  await fetchAdmin(`/photos/${id}`, {
+  await fetchAdmin(`/products/${id}`, {
     method: "DELETE"
   });
 
-  carregarFotosAdmin();
+  carregarProdutosAdmin();
 }
 
 // ==========================
 // PREVIEW
 // ==========================
-function previewImagem(event) {
-  const file = event.target.files[0];
+document.getElementById("imagem")?.addEventListener("change", previewImagem);
+document.getElementById("titulo")?.addEventListener("input", previewImagem);
+
+function previewImagem() {
+  const file = document.getElementById("imagem").files[0];
   const title = document.getElementById("titulo").value;
 
   if (!file) return;
@@ -170,39 +175,45 @@ function previewImagem(event) {
 }
 
 // ==========================
-// UPLOAD (TÍTULO + FOTO + DESCRIÇÃO)
+// UPLOAD (PRODUTO + MÚLTIPLAS IMAGENS)
 // ==========================
 async function adicionarFoto() {
   const files = document.getElementById("imagem").files;
-  const title = document.getElementById("titulo").value;
-  const description = document.getElementById("descricao").value;
+  const title = document.getElementById("titulo").value.trim();
+  const description = document.getElementById("descricao").value.trim();
 
   if (!files.length || !title || !description) {
     alert("Preencha título, descrição e selecione as imagens");
     return;
   }
 
-  for (const file of files) {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("title", title);
-    form.append("description", description);
+  const form = new FormData();
+  form.append("title", title);
+  form.append("description", description);
 
-    await fetchAdmin("/photos", {
-      method: "POST",
-      body: form
-    });
+  for (const file of files) {
+    form.append("files", file);
   }
 
-  alert("Produto cadastrado com múltiplas fotos!");
+  const res = await fetchAdmin("/products", {
+    method: "POST",
+    body: form
+  });
+
+  if (!res || !res.ok) {
+    alert("Erro ao cadastrar produto");
+    return;
+  }
+
+  alert("Produto cadastrado com sucesso!");
 
   document.getElementById("imagem").value = "";
   document.getElementById("titulo").value = "";
   document.getElementById("descricao").value = "";
+  document.getElementById("preview").style.display = "none";
 
-  carregarFotosAdmin();
+  carregarProdutosAdmin();
 }
-
 
 // ==========================
 // DARK MODE
@@ -238,5 +249,5 @@ document.getElementById("btn-logout")?.addEventListener("click", () => {
   await verificarAdmin();
   await carregarDashboard();
   await carregarClientes();
-  await carregarFotosAdmin();
+  await carregarProdutosAdmin();
 })();

@@ -75,8 +75,9 @@ async function carregarProdutos() {
   lista.innerHTML = "";
 
   produtos.forEach(produto => {
-    const primeiraImagem =
-      produto.product_images?.[0]?.url || "";
+    if (!produto.product_images?.length) return;
+
+    const primeiraImagem = produto.product_images[0].url;
 
     const card = document.createElement("div");
     card.className = "produto-card";
@@ -105,24 +106,28 @@ function abrirModalProduto(produto) {
 
   const img = document.getElementById("modal-img");
 
-  img.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-  });
+  // Remove listeners antigos (IMPORTANTE)
+  img.ontouchstart = null;
+  img.ontouchend = null;
 
-  img.addEventListener("touchend", e => {
+  img.ontouchstart = e => {
+    startX = e.touches[0].clientX;
+  };
+
+  img.ontouchend = e => {
     const endX = e.changedTouches[0].clientX;
     const diff = endX - startX;
 
     if (diff > 50) imagemAnterior();
     if (diff < -50) proximaImagem();
-  });
+  };
 }
 
 function atualizarModal() {
-  const imagens = produtoAtual.product_images;
+  if (!produtoAtual?.product_images?.length) return;
 
   document.getElementById("modal-img").src =
-    imagens[indiceImagem].url;
+    produtoAtual.product_images[indiceImagem].url;
 
   document.getElementById("modal-titulo").textContent =
     produtoAtual.title;
